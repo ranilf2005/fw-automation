@@ -1,0 +1,4 @@
+name,protocol,port,description
+DNS_UDP,UDP,53,DNS over UDP
+HTTPS_TCP,TCP,443,HTTPS
+MYSQL_TCP,TCP,3306,MySQL

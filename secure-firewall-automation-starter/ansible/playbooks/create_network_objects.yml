@@ -1,0 +1,28 @@
+---
+- name: Create multiple network objects
+  hosts: localhost
+  gather_facts: false
+  connection: local
+  vars:
+    objects_payload:
+      - name: APP2_NET
+        value: 10.20.20.0/24
+        type: Network
+        description: Sample object from Ansible
+  tasks:
+    - name: Create objects
+      cisco.fmcansible.fmc_configuration:
+        operation: createMultipleNetworkObject
+        path_params:
+          domainUUID: "{{ domain_uuid }}"
+        data: "{{ objects_payload }}"
+        register_as: result
+      vars:
+        ansible_httpapi_host: "{{ fmc_hostname }}"
+        ansible_user: "{{ fmc_username }}"
+        ansible_httpapi_pass: "{{ fmc_password }}"
+        ansible_httpapi_validate_certs: "{{ fmc_verify_ssl }}"
+
+    - name: Show result
+      debug:
+        var: result

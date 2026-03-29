@@ -1,0 +1,5 @@
+name,type,value,description
+APP1_HOST,Host,10.10.10.10,Application host
+APP1_NET,Network,10.10.20.0/24,Application subnet
+DB1_HOST,Host,10.10.30.10,Database host
+DNS1,Host,192.168.1.53,DNS server

@@ -1,0 +1,20 @@
+---
+- name: Get FMC domains
+  hosts: localhost
+  gather_facts: false
+  connection: local
+  tasks:
+    - name: Get domains
+      cisco.fmcansible.fmc_configuration:
+        operation: getAllDomain
+        path_params: {}
+        register_as: result
+      vars:
+        ansible_httpapi_host: "{{ fmc_hostname }}"
+        ansible_user: "{{ fmc_username }}"
+        ansible_httpapi_pass: "{{ fmc_password }}"
+        ansible_httpapi_validate_certs: "{{ fmc_verify_ssl }}"
+
+    - name: Show result
+      debug:
+        var: result

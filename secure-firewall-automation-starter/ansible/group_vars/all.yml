@@ -1,0 +1,4 @@
+fmc_hostname: "https://fmc.example.local"
+fmc_username: "apiuser"
+fmc_password: "changeme"
+fmc_verify_ssl: false

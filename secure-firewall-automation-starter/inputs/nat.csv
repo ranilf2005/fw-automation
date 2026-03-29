@@ -1,0 +1,3 @@
+name,nat_type,source_network,translated_network,destination_interface
+APP1_STATIC,STATIC,APP1_HOST,DB1_HOST,outside
+USERS_PAT,DYNAMIC,APP1_NET,DNS1,outside
