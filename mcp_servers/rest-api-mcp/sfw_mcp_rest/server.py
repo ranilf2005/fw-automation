@@ -471,6 +471,7 @@ async def apply_object_changes(
             continue
         name = str(entry.get("name"))
         obj_type = str(entry.get("type"))
+        # Confirm this path and the payload fields in https://<fmc-host>/api/api-explorer.
         suffix = "/object/hosts" if obj_type == "Host" else "/object/networks"
         payload = {
             "name": name,

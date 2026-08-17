@@ -113,13 +113,17 @@ described in the README — unit tests, linting, type checking, static analysis,
 auditing, and secret scanning — which run in CI on every push and pull request.
 
 AI assistance does not remove two limits, and both are stated here rather than left for
-you to discover:
+you to discover. Neither is a defect: this repository exists to **demonstrate** how the
+FMC REST API, Ansible, and Terraform approaches compare, and how MCP servers wrap each of
+them for an AI agent. It is a learning kit, not a turnkey product for your environment.
 
 - **The write paths have never been executed against a real FMC.** They are exercised
   only by offline unit tests with mocked responses. Validate them in a lab against your
   own FMC version before relying on them. This is why the READMEs describe the write
   paths as beta.
-- **FMC payload schemas differ between releases.** Confirm every endpoint and field in
-  your own API Explorer (`https://<fmc-host>/api/api-explorer`) rather than assuming the
-  payloads here match your deployment. `python/nat/create_manual_nat.py` is the most
-  version-sensitive script in the repository.
+- **FMC payload schemas differ between releases.** Every endpoint that writes carries an
+  inline comment telling you to confirm the path and the payload fields in your own API
+  Explorer (`https://<fmc-host>/api/api-explorer`). Enter the values that your FMC
+  version documents rather than assuming the ones here match.
+  `python/nat/create_manual_nat.py` is the most version-sensitive script in the
+  repository.

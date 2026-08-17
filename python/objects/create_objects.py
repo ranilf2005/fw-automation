@@ -33,6 +33,7 @@ def main() -> None:
     client = FMCClient()
     domain_uuid = client.domain_uuid()
 
+    # Confirm these paths and payload fields in https://<fmc-host>/api/api-explorer first.
     existing_hosts = get_existing(client, f"/api/fmc_config/v1/domain/{domain_uuid}/object/hosts")
     existing_networks = get_existing(
         client, f"/api/fmc_config/v1/domain/{domain_uuid}/object/networks"

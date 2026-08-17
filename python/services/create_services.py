@@ -29,6 +29,7 @@ def main() -> None:
     client = FMCClient()
     domain_uuid = client.domain_uuid()
 
+    # Confirm this path and the payload fields in https://<fmc-host>/api/api-explorer first.
     endpoint = f"/api/fmc_config/v1/domain/{domain_uuid}/object/protocolportobjects"
     existing_by_name = {item["name"]: item for item in client.get_all(endpoint)}
 

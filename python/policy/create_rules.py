@@ -69,6 +69,7 @@ def main() -> None:
     services = map_by_name(
         client, f"/api/fmc_config/v1/domain/{domain_uuid}/object/protocolportobjects"
     )
+    # Confirm this path and the payload fields in https://<fmc-host>/api/api-explorer first.
     endpoint = (
         f"/api/fmc_config/v1/domain/{domain_uuid}"
         f"/policy/accesspolicies/{settings.access_policy_id}/accessrules"

@@ -42,6 +42,8 @@ def main() -> None:
     hosts = map_by_name(client, f"/api/fmc_config/v1/domain/{domain_uuid}/object/hosts")
     networks = map_by_name(client, f"/api/fmc_config/v1/domain/{domain_uuid}/object/networks")
     objects = {**hosts, **networks}
+    # Manual NAT varies most between FMC releases. Confirm this path and the
+    # FTDManualNatRule fields in https://<fmc-host>/api/api-explorer before running it.
     endpoint = (
         f"/api/fmc_config/v1/domain/{domain_uuid}"
         f"/policy/ftdnatpolicies/{settings.nat_policy_id}/manualnatrules"
