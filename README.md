@@ -23,7 +23,7 @@ without being able to change a firewall in a single unreviewed step.
 [FastMCP](https://github.com/jlowin/fastmcp) for the MCP servers. Standalone — no
 framework required. Docker images provided for the MCP servers.
 
-**Status:** 1.0.0. Lab-ready and CI-tested (184 unit tests, no live FMC required). Treat
+**Status:** 1.0.0. Lab-ready and CI-tested (193 unit tests, no live FMC required). Treat
 the write paths as beta until you have validated the payloads against your own FMC
 version.
 
@@ -252,7 +252,6 @@ non-secret settings.
 
 Each server has its own `.env.example`. See the per-server README.
 
-## Usage
 ## Usage
 
 Every script supports `--help`, which documents its arguments and the environment
@@ -519,7 +518,7 @@ Run the same checks CI runs:
 ```bash
 ruff check .            # lint
 ruff format --check .   # formatting
-pytest                  # 184 unit tests, no live FMC needed
+pytest                  # 193 unit tests, no live FMC needed
 bandit -c pyproject.toml -r python mcp_servers
 ansible-lint ansible/
 terraform -chdir=terraform fmt -check
