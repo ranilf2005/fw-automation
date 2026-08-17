@@ -1,10 +1,16 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 secure-firewall-automation-starter contributors
+"""Filesystem and validation helpers shared by the automation scripts."""
+
 from __future__ import annotations
 
 import ipaddress
 import json
 from pathlib import Path
 from typing import Any
+
 import pandas as pd
+
 from .config import ROOT
 
 

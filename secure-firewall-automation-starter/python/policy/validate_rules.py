@@ -1,13 +1,18 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 secure-firewall-automation-starter contributors
+"""Validate the access-rule CSV, including that referenced objects exist in FMC."""
+
 from __future__ import annotations
 
 import sys
 from pathlib import Path
+
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "python"))
 
-from common.fmc_client import FMCClient
+from common.fmc_client import FMCClient  # noqa: E402
 
 REQUIRED_COLUMNS = [
     "rule_name",
@@ -46,7 +51,9 @@ def main() -> None:
     zones = get_names(client, f"/api/fmc_config/v1/domain/{domain_uuid}/object/securityzones")
     hosts = get_names(client, f"/api/fmc_config/v1/domain/{domain_uuid}/object/hosts")
     networks = get_names(client, f"/api/fmc_config/v1/domain/{domain_uuid}/object/networks")
-    service_objects = get_names(client, f"/api/fmc_config/v1/domain/{domain_uuid}/object/protocolportobjects")
+    service_objects = get_names(
+        client, f"/api/fmc_config/v1/domain/{domain_uuid}/object/protocolportobjects"
+    )
     network_names = hosts | networks
 
     errors: list[str] = []

@@ -1,0 +1,35 @@
+# SPDX-License-Identifier: MIT
+# gitleaks configuration for fw-automation
+title = "fw-automation gitleaks config"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = """
+Documentation placeholders. These are template values shipped so users know which
+variables to set; they are not real credentials. Any change to these lines should
+still be reviewed.
+"""
+paths = [
+  '''.*\.env\.example$''',
+  '''.*\.example$''',
+  '''secure-firewall-automation-starter/README\.md''',
+  '''secure-firewall-automation-starter/mcp_servers/.*\.(md|html)$''',
+  '''secure-firewall-automation-starter/ansible/group_vars/all\.yml''',
+  '''secure-firewall-automation-starter/terraform/terraform\.tfvars\.example''',
+]
+regexTarget = "line"
+regexes = [
+  '''(?i)(password|passwd|secret|token)\s*[:=]\s*["']?(changeme|change_me|replace-me|<[^>]+>|\$\{[^}]+\}|example|placeholder|redacted|\*+)["']?''',
+  '''(?i)FMC_PASSWORD\s*=\s*$''',
+]
+
+[[allowlists]]
+description = "Generated artefacts and vendored tool state are not reviewed for secrets here."
+paths = [
+  '''.*/outputs/.*''',
+  '''.*/__pycache__/.*''',
+  '''.*\.terraform/.*''',
+  '''.*\.lock\.hcl$''',
+]

@@ -1,0 +1,60 @@
+{
+  "$comment": "Metadata for the Cisco DevNet Code Exchange submission form. SPDX-License-Identifier: MIT",
+  "name": "Ansible MCP Server for Cisco Secure Firewall",
+  "shortDescription": "MCP server that lets an AI agent run reviewed cisco.fmcansible playbooks against FMC, with an allowlist, dry run, and confirmation gate.",
+  "description": "The agent never writes automation. It selects from an allowlist of playbooks a human already reviewed and merged, and supplies variables drawn from a fixed permitted set. Every invocation is a fixed argv with shell=False; the playbook path is resolved and re-verified inside ansible/playbooks; extra variables are written to a temporary JSON file rather than interpolated into a command line; credential and connection variables are refused outright and come only from the operator's environment. Real execution is disabled until ANSIBLE_MCP_ALLOW_RUN=true and additionally requires a confirmation token bound to the dry-run plan.",
+  "categories": ["Security", "Tools"],
+  "products": ["Secure Firewall"],
+  "ai": {
+    "type": "MCP Servers",
+    "deployType": "HTTP/Stream",
+    "capabilities": ["Tools"]
+  },
+  "license": "MIT License",
+  "licenseFile": "../../LICENSE",
+  "language": "Python",
+  "minimumPythonVersion": "3.11",
+  "transports": ["stdio", "http"],
+  "topics": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "ansible",
+    "cisco",
+    "secure-firewall",
+    "fmc",
+    "firepower",
+    "network-automation",
+    "ai-agents"
+  ],
+  "tools": [
+    { "name": "list_playbooks", "access": "read", "description": "Allowlisted playbooks and whether each mutates configuration." },
+    { "name": "describe_playbook", "access": "read", "description": "Plays, tasks, and declared variables." },
+    { "name": "check_syntax", "access": "read", "description": "ansible-playbook --syntax-check. Connects to nothing." },
+    { "name": "dry_run_playbook", "access": "read", "description": "--check --diff; reports would-change tasks and issues a token." },
+    { "name": "run_playbook_for_real", "access": "write", "description": "Real execution. Gated by ANSIBLE_MCP_ALLOW_RUN and a plan-bound token." }
+  ],
+  "safety": {
+    "readOnlyByDefault": true,
+    "writeEnvGate": "ANSIBLE_MCP_ALLOW_RUN",
+    "confirmationRequired": true,
+    "confirmationBinding": "HMAC over canonical plan JSON (playbook + extra_vars + would_change), per-process key, 600s TTL",
+    "shellExecution": false,
+    "pathAllowlist": "ansible/playbooks, re-verified after resolution",
+    "variableAllowlist": true,
+    "credentialVariablesRefused": true,
+    "subprocessTimeoutSeconds": 600,
+    "secretRedaction": "passwords, tokens, ansible-vault blobs",
+    "responseSizeCap": 200000
+  },
+  "thirdParty": [
+    {
+      "component": "cisco.fmcansible",
+      "license": "GPL-3.0-or-later",
+      "url": "https://github.com/CiscoDevNet/FMCAnsible",
+      "relationship": "Invoked via the standard ansible-playbook interface. Not vendored, copied, or linked."
+    }
+  ],
+  "notCiscoProduct": true,
+  "support": "Community, best effort. Not supported by Cisco TAC."
+}

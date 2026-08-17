@@ -1,0 +1,51 @@
+{
+  "$comment": "Metadata for the Cisco DevNet Code Exchange submission form. SPDX-License-Identifier: MIT",
+  "name": "Cisco Secure Firewall REST API MCP Server",
+  "shortDescription": "MCP server exposing Cisco Secure Firewall (FMC) REST tooling to AI agents, with a preview-confirm-apply gate on every configuration change.",
+  "description": "Gives an AI agent the FMC REST API behind a safety harness. Read-only tools cover inventory, object search with IP-containment matching, object-usage tracing, access-rule listing, and deployment status. Configuration changes are split into a preview tool that returns a plan plus an HMAC confirmation token bound to that plan, and an apply tool that refuses any token which does not authorise exactly the plan it was given. Writes are disabled entirely unless the operator sets FMC_ALLOW_WRITES=true.",
+  "categories": ["Security", "Tools"],
+  "products": ["Secure Firewall"],
+  "ai": {
+    "type": "MCP Servers",
+    "deployType": "HTTP/Stream",
+    "capabilities": ["Tools"]
+  },
+  "license": "MIT License",
+  "licenseFile": "../../LICENSE",
+  "language": "Python",
+  "minimumPythonVersion": "3.11",
+  "transports": ["stdio", "http"],
+  "topics": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "cisco",
+    "secure-firewall",
+    "fmc",
+    "firepower",
+    "network-automation",
+    "security",
+    "ai-agents"
+  ],
+  "tools": [
+    { "name": "list_fmc_profiles", "access": "read", "description": "Discover configured FMC instances." },
+    { "name": "get_inventory", "access": "read", "description": "Domains, devices, policies, and object counts." },
+    { "name": "search_objects", "access": "read", "description": "Find objects by name, value, or IP containment." },
+    { "name": "find_object_usage", "access": "read", "description": "Which access rules reference an object." },
+    { "name": "list_access_rules", "access": "read", "description": "List access rules with filters." },
+    { "name": "get_deployment_status", "access": "read", "description": "Devices with undeployed changes." },
+    { "name": "preview_object_changes", "access": "read", "description": "Diff proposed objects and issue a confirmation token." },
+    { "name": "apply_object_changes", "access": "write", "description": "Apply a previewed plan. Gated by FMC_ALLOW_WRITES and a plan-bound token." }
+  ],
+  "safety": {
+    "readOnlyByDefault": true,
+    "writeEnvGate": "FMC_ALLOW_WRITES",
+    "confirmationRequired": true,
+    "confirmationBinding": "HMAC over canonical plan JSON, per-process key, 300s TTL",
+    "tlsVerificationDefault": true,
+    "secretRedaction": true,
+    "responseSizeCap": 200000
+  },
+  "notCiscoProduct": true,
+  "support": "Community, best effort. Not supported by Cisco TAC."
+}

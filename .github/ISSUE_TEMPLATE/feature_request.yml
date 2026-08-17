@@ -1,0 +1,66 @@
+name: Feature request
+description: Suggest a new script, playbook, resource, or MCP tool
+title: "[feat]: "
+labels: [enhancement, triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This repository is a **learning starter kit**. Proposals are prioritised on
+        teaching value and safety, not on breadth of coverage.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - python/ scripts
+        - ansible/ playbooks
+        - terraform/
+        - mcp_servers/rest-api-mcp
+        - mcp_servers/ansible-mcp
+        - mcp_servers/terraform-mcp
+        - docs
+        - CI / tooling
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Describe the operational task a firewall engineer is trying to complete.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: If this is an MCP tool, give the proposed tool name, inputs, and outputs.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: risk
+    attributes:
+      label: Does this write to FMC?
+      options:
+        - "No - read-only"
+        - "Yes - creates or modifies configuration"
+        - "Yes - deletes configuration"
+    validations:
+      required: true
+
+  - type: textarea
+    id: validation
+    attributes:
+      label: How should it be validated and rolled back?
+      description: Required for anything that writes to FMC. See docs/TESTING.md.
+
+  - type: checkboxes
+    id: contribute
+    attributes:
+      label: Contribution
+      options:
+        - label: I am willing to open a pull request for this

@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: MIT
+# ansible-lint configuration
+profile: production
+
+exclude_paths:
+  - .venv/
+  - outputs/
+  - collections/
+  - mcp_servers/
+
+# The cisco.fmcansible collection is not installed in CI, so module-name resolution
+# for its tasks cannot be verified there. Syntax, naming, and security rules still apply.
+skip_list:
+  - syntax-check[specific]
+
+warn_list:
+  - experimental

@@ -1,15 +1,21 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 secure-firewall-automation-starter contributors
+"""Create FMC protocol/port service objects from a CSV file."""
+
 from __future__ import annotations
 
 import sys
 from pathlib import Path
+
 import pandas as pd
+import requests
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "python"))
 
-from common.fmc_client import FMCClient
-from common.logger import get_logger
-from common.utils import write_csv
+from common.fmc_client import FMCClient  # noqa: E402
+from common.logger import get_logger  # noqa: E402
+from common.utils import write_csv  # noqa: E402
 
 logger = get_logger(__name__)
 
@@ -21,8 +27,7 @@ def main() -> None:
     domain_uuid = client.domain_uuid()
 
     endpoint = f"/api/fmc_config/v1/domain/{domain_uuid}/object/protocolportobjects"
-    existing = client.get(endpoint, params={"limit": 1000})
-    existing_by_name = {item["name"]: item for item in existing.get("items", [])}
+    existing_by_name = {item["name"]: item for item in client.get_all(endpoint)}
 
     results: list[dict[str, str]] = []
     for _, row in df.iterrows():
@@ -31,7 +36,9 @@ def main() -> None:
         port = str(row["port"]).strip()
         description = str(row.get("description", "")).strip()
         if name in existing_by_name:
-            results.append({"name": name, "status": "SKIP", "detail": "Service already exists by name"})
+            results.append(
+                {"name": name, "status": "SKIP", "detail": "Service already exists by name"}
+            )
             continue
         payload = {
             "name": name,
@@ -43,8 +50,8 @@ def main() -> None:
         try:
             client.post(endpoint, payload)
             results.append({"name": name, "status": "CREATED", "detail": f"{protocol}/{port}"})
-        except Exception as exc:  # noqa: BLE001
-            logger.exception("Failed creating service %s", name)
+        except (requests.RequestException, ValueError) as exc:
+            logger.error("Failed creating service %s: %s", name, exc)
             results.append({"name": name, "status": "FAILED", "detail": str(exc)})
 
     out = write_csv("outputs/reports/services_result.csv", results)

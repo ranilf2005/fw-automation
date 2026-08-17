@@ -1,7 +1,12 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 secure-firewall-automation-starter contributors
+"""Offline validation of the service CSV before anything is sent to FMC."""
+
 from __future__ import annotations
 
 import sys
 from pathlib import Path
+
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[2]

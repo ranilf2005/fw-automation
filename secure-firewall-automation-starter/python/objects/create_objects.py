@@ -1,22 +1,27 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 secure-firewall-automation-starter contributors
+"""Create FMC host and network objects from a CSV file."""
+
 from __future__ import annotations
 
 import sys
 from pathlib import Path
+
 import pandas as pd
+import requests
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "python"))
 
-from common.fmc_client import FMCClient
-from common.logger import get_logger
-from common.utils import write_csv
+from common.fmc_client import FMCClient  # noqa: E402
+from common.logger import get_logger  # noqa: E402
+from common.utils import write_csv  # noqa: E402
 
 logger = get_logger(__name__)
 
 
 def get_existing(client: FMCClient, endpoint: str) -> dict[str, dict]:
-    data = client.get(endpoint, params={"limit": 1000})
-    return {item["name"]: item for item in data.get("items", [])}
+    return {item["name"]: item for item in client.get_all(endpoint)}
 
 
 def main() -> None:
@@ -26,7 +31,9 @@ def main() -> None:
     domain_uuid = client.domain_uuid()
 
     existing_hosts = get_existing(client, f"/api/fmc_config/v1/domain/{domain_uuid}/object/hosts")
-    existing_networks = get_existing(client, f"/api/fmc_config/v1/domain/{domain_uuid}/object/networks")
+    existing_networks = get_existing(
+        client, f"/api/fmc_config/v1/domain/{domain_uuid}/object/networks"
+    )
 
     results: list[dict[str, str]] = []
     for _, row in df.iterrows():
@@ -45,14 +52,16 @@ def main() -> None:
             payload = {"name": name, "type": "Network", "value": value, "description": description}
 
         if name in existing:
-            results.append({"name": name, "status": "SKIP", "detail": "Object already exists by name"})
+            results.append(
+                {"name": name, "status": "SKIP", "detail": "Object already exists by name"}
+            )
             continue
 
         try:
             client.post(endpoint, payload)
             results.append({"name": name, "status": "CREATED", "detail": value})
-        except Exception as exc:  # noqa: BLE001
-            logger.exception("Failed creating object %s", name)
+        except (requests.RequestException, ValueError) as exc:
+            logger.error("Failed creating object %s: %s", name, exc)
             results.append({"name": name, "status": "FAILED", "detail": str(exc)})
 
     out = write_csv("outputs/reports/objects_result.csv", results)

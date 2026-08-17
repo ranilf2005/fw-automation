@@ -1,0 +1,89 @@
+name: Bug report
+description: Something in this repository does not work as documented
+title: "[bug]: "
+labels: [bug, triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filing a report.
+
+        **Do not report security vulnerabilities here.** Follow
+        [SECURITY.md](https://github.com/ranilf2005/fw-automation/blob/main/secure-firewall-automation-starter/SECURITY.md)
+        instead.
+
+        **Redact all credentials, tokens, real hostnames, and real IP addresses.**
+
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Pre-flight
+      options:
+        - label: I confirmed the endpoint and payload in FMC API Explorer on my own FMC
+          required: true
+        - label: I re-ran with `LOG_LEVEL=DEBUG` and reviewed the output
+          required: true
+        - label: I have redacted all secrets and real environment data from this report
+          required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - python/ scripts
+        - ansible/ playbooks
+        - terraform/
+        - mcp_servers/rest-api-mcp
+        - mcp_servers/ansible-mcp
+        - mcp_servers/terraform-mcp
+        - docs
+        - CI / tooling
+    validations:
+      required: true
+
+  - type: input
+    id: fmc-version
+    attributes:
+      label: FMC version
+      placeholder: "7.4.2"
+    validations:
+      required: true
+
+  - type: input
+    id: ftd-version
+    attributes:
+      label: FTD version
+      placeholder: "7.4.2"
+
+  - type: input
+    id: tool-version
+    attributes:
+      label: Python / Ansible / Terraform version
+      placeholder: "Python 3.12.4, ansible-core 2.17.3, Terraform 1.9.8"
+    validations:
+      required: true
+
+  - type: textarea
+    id: command
+    attributes:
+      label: Command you ran
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected to happen
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: What actually happened
+      description: Paste the error output, redacted.
+      render: shell
+    validations:
+      required: true

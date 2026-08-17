@@ -1,5 +1,9 @@
-requests>=2.31.0
-python-dotenv>=1.0.1
-pandas>=2.2.2
-openpyxl>=3.1.5
-PyYAML>=6.0.2
+# SPDX-License-Identifier: MIT
+# Runtime dependencies for the python/ scripts.
+# Compatible-release pins (~=) allow patch and minor security updates while blocking
+# breaking major upgrades. Dependabot proposes bumps weekly; CI runs pip-audit.
+requests~=2.32.3
+python-dotenv~=1.0.1
+pandas~=2.2.3
+openpyxl~=3.1.5
+PyYAML~=6.0.2

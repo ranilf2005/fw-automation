@@ -1,0 +1,71 @@
+{
+  "$comment": "Metadata for the Cisco DevNet Code Exchange submission form. SPDX-License-Identifier: MIT",
+  "name": "Terraform MCP Server for Cisco Secure Firewall",
+  "shortDescription": "MCP server exposing Terraform validate, plan, explain, and drift detection for Cisco Secure Firewall, with apply disabled by default.",
+  "description": "Gives an AI agent the Terraform workflow for Secure Firewall as read-only tools: version reporting, init with -backend=false, structured validate diagnostics, plan-to-file with a compact sanitised change summary, resource-by-resource plan explanation, refresh-only drift detection, and a sanitised state summary. Values Terraform marks sensitive are replaced with a placeholder before they leave the server, so credentials never reach the model context. Workspaces are addressed by allowlisted name, never by path. terraform apply is disabled until TF_MCP_ALLOW_APPLY=true and additionally requires a confirmation token bound to the reviewed change summary; it applies the saved plan file, closing the plan-then-apply-something-else gap.",
+  "categories": ["Security", "Tools"],
+  "products": ["Secure Firewall"],
+  "ai": {
+    "type": "MCP Servers",
+    "deployType": "HTTP/Stream",
+    "capabilities": ["Tools"]
+  },
+  "license": "MIT License",
+  "licenseFile": "../../LICENSE",
+  "language": "Python",
+  "minimumPythonVersion": "3.11",
+  "requires": { "terraform": ">=1.6" },
+  "transports": ["stdio", "http"],
+  "topics": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "terraform",
+    "cisco",
+    "secure-firewall",
+    "fmc",
+    "firepower",
+    "infrastructure-as-code",
+    "ai-agents"
+  ],
+  "tools": [
+    { "name": "list_workspaces", "access": "read", "description": "Allowlisted Terraform directories." },
+    { "name": "get_versions", "access": "read", "description": "Terraform CLI and provider versions." },
+    { "name": "init_workspace", "access": "read", "description": "terraform init -backend=false." },
+    { "name": "validate_workspace", "access": "read", "description": "terraform validate -json with structured diagnostics." },
+    { "name": "plan_workspace", "access": "read", "description": "Plan to file; sanitised change summary plus a confirmation token." },
+    { "name": "explain_plan", "access": "read", "description": "Resource-by-resource narrative of the saved plan." },
+    { "name": "detect_drift", "access": "read", "description": "Refresh-only plan: what changed outside Terraform." },
+    { "name": "show_state", "access": "read", "description": "Sanitised current state summary." },
+    { "name": "apply_plan", "access": "write", "description": "Apply the saved plan. Gated by TF_MCP_ALLOW_APPLY and a plan-bound token." }
+  ],
+  "safety": {
+    "readOnlyByDefault": true,
+    "writeEnvGate": "TF_MCP_ALLOW_APPLY",
+    "confirmationRequired": true,
+    "confirmationBinding": "HMAC over workspace + change counts + destructive flag + sorted resource addresses, per-process key, 900s TTL",
+    "shellExecution": false,
+    "workspaceAllowlist": true,
+    "subcommandAllowlist": ["version", "init", "validate", "plan", "show", "apply"],
+    "appliesSavedPlanFile": true,
+    "sensitiveValueRedaction": "Terraform sensitive marks honoured in both plan and state output",
+    "subprocessTimeoutSeconds": 900,
+    "responseSizeCap": 200000
+  },
+  "thirdParty": [
+    {
+      "component": "Terraform CLI",
+      "license": "BUSL-1.1",
+      "url": "https://github.com/hashicorp/terraform",
+      "relationship": "Invoked as an external binary. Copied from the official image at container build time; not redistributed in source form."
+    },
+    {
+      "component": "CiscoDevNet/fmc provider",
+      "license": "MPL-2.0",
+      "url": "https://github.com/CiscoDevNet/terraform-provider-fmc",
+      "relationship": "Downloaded by terraform init from the public Terraform Registry. Not redistributed."
+    }
+  ],
+  "notCiscoProduct": true,
+  "support": "Community, best effort. Not supported by Cisco TAC."
+}

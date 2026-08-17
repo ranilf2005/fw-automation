@@ -1,0 +1,14 @@
+---
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 secure-firewall-automation-starter contributors
+#
+# Network objects created by ansible/playbooks/create_network_objects.yml.
+# Edit this file instead of the playbook.
+#
+# Addressing here uses RFC 1918 space for documentation purposes only.
+
+network_objects:
+  - name: APP2_NET
+    value: 10.20.20.0/24
+    type: Network
+    description: Sample object created from Ansible

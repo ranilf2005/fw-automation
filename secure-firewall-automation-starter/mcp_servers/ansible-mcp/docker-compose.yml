@@ -1,0 +1,34 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 secure-firewall-automation-starter contributors
+services:
+  sfw-mcp-ansible:
+    build: .
+    image: sfw-mcp-ansible:1.0.0
+    container_name: sfw-mcp-ansible
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      MCP_TRANSPORT: http
+      MCP_HOST: 0.0.0.0
+      MCP_PORT: "8001"
+      ANSIBLE_PROJECT_DIR: /project
+    ports:
+      # Loopback only. No built-in authentication; front it with an authenticating proxy.
+      - "127.0.0.1:8001:8001"
+    volumes:
+      # The playbooks are mounted read-only, so a compromised container cannot rewrite
+      # the automation it is allowed to run.
+      - ../..:/project:ro
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

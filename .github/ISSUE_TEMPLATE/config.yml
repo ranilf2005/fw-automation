@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/ranilf2005/fw-automation/security/advisories/new
+    about: Report privately. Never open a public issue for a security problem.
+  - name: Cisco Secure Firewall product support
+    url: https://www.cisco.com/c/en/us/support/index.html
+    about: This repository is not a Cisco product. For FMC/FTD product issues, contact Cisco TAC.
+  - name: Cisco PSIRT
+    url: https://www.cisco.com/c/en/us/about/security-center/security-vulnerability-policy.html
+    about: Report a vulnerability in a Cisco product itself.
+  - name: Cisco Code Exchange Community
+    url: https://community.cisco.com/t5/code-exchange/bd-p/dev-code-exchange
+    about: General discussion with other Cisco automation developers.

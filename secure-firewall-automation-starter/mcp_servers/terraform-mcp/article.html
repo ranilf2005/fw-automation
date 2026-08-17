@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<!--
+  SPDX-License-Identifier: MIT
+  Copyright (c) 2026 secure-firewall-automation-starter contributors
+  Standalone article for the Cisco DevNet Code Exchange submission.
+  Self-contained: no external CSS, fonts, scripts, or trackers.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Terraform MCP Server for Cisco Secure Firewall</title>
+<meta name="description" content="MCP server exposing Terraform validate, plan, explain, and drift detection for Cisco Secure Firewall, with apply disabled by default.">
+<style>
+  :root{
+    --ink:#1b1c1d; --muted:#5a6169; --line:#dfe3e8; --bg:#fff;
+    --accent:#0d74af; --accent-soft:#eaf4fb; --warn:#fff4e5; --warn-line:#e8a33d;
+    --ok:#eaf7ee; --ok-line:#3faf6b; --code-bg:#f6f8fa;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .wrap{max-width:860px;margin:0 auto;padding:2.5rem 1.25rem 5rem}
+  header{border-bottom:3px solid var(--accent);padding-bottom:1.25rem;margin-bottom:2rem}
+  .eyebrow{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);background:var(--accent-soft);padding:.3rem .6rem;border-radius:3px;margin-bottom:.9rem}
+  h1{font-size:2.05rem;line-height:1.2;margin:0 0 .6rem}
+  h2{font-size:1.35rem;margin:2.5rem 0 .8rem;padding-bottom:.35rem;border-bottom:1px solid var(--line)}
+  h3{font-size:1.06rem;margin:1.7rem 0 .5rem}
+  .lede{font-size:1.08rem;color:var(--muted);margin:0}
+  .meta{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:1.1rem}
+  .tag{font-size:.76rem;border:1px solid var(--line);border-radius:99px;padding:.2rem .65rem;color:var(--muted)}
+  code{font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;font-size:.875em;background:var(--code-bg);padding:.12em .38em;border-radius:3px}
+  pre{background:var(--code-bg);border:1px solid var(--line);border-radius:6px;padding:.9rem 1rem;overflow-x:auto;font-size:.85rem;line-height:1.55}
+  pre code{background:none;padding:0}
+  table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.9rem}
+  th,td{text-align:left;padding:.55rem .7rem;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:var(--code-bg);font-weight:600}
+  .note,.warn,.ok{border-left:4px solid;border-radius:0 5px 5px 0;padding:.85rem 1rem;margin:1.2rem 0;font-size:.93rem}
+  .note{background:var(--accent-soft);border-color:var(--accent)}
+  .warn{background:var(--warn);border-color:var(--warn-line)}
+  .ok{background:var(--ok);border-color:var(--ok-line)}
+  .flow{background:var(--code-bg);border:1px solid var(--line);border-radius:6px;padding:1rem;margin:1.2rem 0;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.8rem;line-height:1.75;white-space:pre;overflow-x:auto}
+  ul,ol{padding-left:1.35rem} li{margin:.32rem 0}
+  a{color:var(--accent)}
+  footer{margin-top:3.5rem;padding-top:1.25rem;border-top:1px solid var(--line);font-size:.85rem;color:var(--muted)}
+  .rw{font-size:.7rem;font-weight:700;padding:.12rem .45rem;border-radius:3px;letter-spacing:.04em}
+  .r{background:var(--ok);color:#1d6b40} .w{background:var(--warn);color:#8a5a10}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <span class="eyebrow">MCP Server &middot; Cisco Secure Firewall</span>
+  <h1>Terraform MCP Server for Cisco Secure Firewall</h1>
+  <p class="lede">
+    Validate, plan, <strong>explain</strong>, and detect drift &mdash; all read-only
+    &mdash; with <code>apply</code> disabled by default and gated behind a plan-bound
+    confirmation token.
+  </p>
+  <div class="meta">
+    <span class="tag">Security</span><span class="tag">Tools</span>
+    <span class="tag">Secure Firewall</span><span class="tag">MCP Servers</span>
+    <span class="tag">HTTP/Stream</span><span class="tag">Python 3.11+</span>
+    <span class="tag">Terraform &ge; 1.6</span><span class="tag">MIT License</span>
+  </div>
+</header>
+
+<h2>Why an LLM belongs here</h2>
+<p>
+  <code>terraform plan</code> output is dense and very easy to skim past. Turning it into
+  <em>&ldquo;this deletes two rules and replaces the object three rules depend
+  on&rdquo;</em> is precisely what a language model is good at &mdash; and it is a
+  <strong>read-only</strong> operation. Plan explanation and drift detection give you most
+  of the value of an AI agent with almost none of the risk.
+</p>
+
+<table>
+  <thead><tr><th>Tool</th><th>Access</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td><code>list_workspaces</code></td><td><span class="rw r">READ</span></td><td>The Terraform directories this server may operate on.</td></tr>
+    <tr><td><code>get_versions</code></td><td><span class="rw r">READ</span></td><td>Terraform CLI and provider versions.</td></tr>
+    <tr><td><code>init_workspace</code></td><td><span class="rw r">READ</span></td><td><code>terraform init -backend=false</code> &mdash; no remote state contacted.</td></tr>
+    <tr><td><code>validate_workspace</code></td><td><span class="rw r">READ</span></td><td><code>terraform validate -json</code> with structured diagnostics.</td></tr>
+    <tr><td><code>plan_workspace</code></td><td><span class="rw r">READ</span></td><td>Plan to a file; sanitised change summary plus a confirmation token.</td></tr>
+    <tr><td><code>explain_plan</code></td><td><span class="rw r">READ</span></td><td>Resource-by-resource narrative of the saved plan.</td></tr>
+    <tr><td><code>detect_drift</code></td><td><span class="rw r">READ</span></td><td>Refresh-only plan: what changed outside Terraform.</td></tr>
+    <tr><td><code>show_state</code></td><td><span class="rw r">READ</span></td><td>Sanitised current state summary.</td></tr>
+    <tr><td><code>apply_plan</code></td><td><span class="rw w">WRITE</span></td><td>Apply the <em>saved plan file</em>. Disabled by default.</td></tr>
+  </tbody>
+</table>
+
+<h2>Sensitive value handling</h2>
+<p>
+  Terraform marks sensitive attributes in its JSON output. This server walks
+  <code>before_sensitive</code> / <code>after_sensitive</code> /
+  <code>sensitive_values</code> and replaces every marked value with
+  <code>&lt;sensitive&gt;</code> <strong>before the data leaves the server</strong>.
+  Passwords and tokens never reach the model context.
+</p>
+<pre><code>{
+  "address": "fmc_network_objects.app1",
+  "action": "create",
+  "changed_attributes": ["name", "value"],
+  "after": {
+    "name": "APP1_NET",
+    "value": "10.10.20.0/24",
+    "password": "&lt;sensitive&gt;"
+  }
+}</code></pre>
+
+<h2>Security model</h2>
+<div class="flow">Agent: plan_workspace(workspace="starter")
+        |
+        v
+  name in TF_MCP_WORKSPACES allowlist? -- no --> rejected
+        | yes                                  (a caller can NEVER supply a path)
+        v
+  terraform -chdir=&lt;resolved&gt; plan -out=mcp.tfplan
+  (fixed argv, shell=False, subcommand allowlist, timeout)
+        |
+        v
+  terraform show -json mcp.tfplan  -->  sanitise sensitive values
+        |
+        v
+  change summary + is_destructive + confirmation token
+        |
+   [ human reviews ]
+        |
+        v
+  TF_MCP_ALLOW_APPLY=true AND token authorises this exact summary?
+        | yes                                        | no
+        v                                            v
+  terraform apply mcp.tfplan   (the SAVED plan)   rejected</div>
+
+<ul>
+  <li><strong>Workspace allowlist.</strong> <code>TF_MCP_WORKSPACES</code> is a list of <code>name=path</code> pairs. A caller names a workspace; it can never supply a path.</li>
+  <li><strong>Fixed argv, <code>shell=False</code>.</strong> Subcommands and flags come from the server's own code.</li>
+  <li><strong>Subcommand allowlist:</strong> only <code>version</code>, <code>init</code>, <code>validate</code>, <code>plan</code>, <code>show</code>, <code>apply</code>.</li>
+  <li><strong>Filtered child environment.</strong> Only an explicit passthrough list, including the <code>TF_VAR_*</code> credentials, reaches the subprocess.</li>
+  <li><strong><code>init</code> uses <code>-backend=false</code></strong>, so inspection never touches remote state.</li>
+  <li><strong>Apply uses the saved plan file</strong>, closing the classic plan-then-apply-something-else gap.</li>
+  <li><strong>Hard timeout</strong> with process kill (<code>TF_MCP_TIMEOUT</code>, default 900s).</li>
+  <li><strong>Destructive plans are flagged</strong> with <code>is_destructive: true</code> and an explicit <code>warning</code> field.</li>
+</ul>
+
+<h2>1. Configure</h2>
+<p>Terraform &ge; 1.6 must be installed and on <code>PATH</code> (or set <code>TERRAFORM_BINARY</code>). Copy <code>.env.example</code> to <code>.env</code>:</p>
+<pre><code>TF_MCP_WORKSPACES=starter=/absolute/path/to/secure-firewall-automation-starter/terraform
+
+TF_VAR_fmc_url=https://fmc.example.local
+TF_VAR_fmc_username=apiuser
+TF_VAR_fmc_password=&lt;export in your shell, not in the file&gt;
+TF_VAR_fmc_insecure_skip_verify=false
+
+TF_MCP_ALLOW_APPLY=false
+TF_MCP_TIMEOUT=900</code></pre>
+
+<div class="warn">
+  <strong>State is sensitive.</strong> <code>terraform.tfstate</code> records object
+  values in cleartext and is gitignored. Use an encrypted remote backend for anything
+  beyond a local lab.
+</div>
+
+<h2>2. Run the MCP server</h2>
+<table>
+  <thead><tr><th><code>MCP_TRANSPORT</code></th><th>Behaviour</th><th>Use for</th></tr></thead>
+  <tbody>
+    <tr><td><code>stdio</code> (default)</td><td>MCP over stdin/stdout, no port opened.</td><td>Desktop MCP clients.</td></tr>
+    <tr><td><code>http</code></td><td>Serves <code>/mcp</code> on <code>MCP_HOST:MCP_PORT</code>.</td><td>Shared deployments, Docker.</td></tr>
+  </tbody>
+</table>
+
+<h3>Local Python (stdio)</h3>
+<pre><code>python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+MCP_TRANSPORT=stdio python -m sfw_mcp_terraform</code></pre>
+<pre><code>{
+  "mcpServers": {
+    "cisco-fmc-terraform": {
+      "command": ".venv/bin/python",
+      "args": ["-m", "sfw_mcp_terraform"],
+      "cwd": "/absolute/path/to/mcp_servers/terraform-mcp",
+      "env": {
+        "MCP_TRANSPORT": "stdio",
+        "TF_MCP_ALLOW_APPLY": "false"
+      }
+    }
+  }
+}</code></pre>
+
+<h3>Local Python (HTTP)</h3>
+<pre><code>MCP_TRANSPORT=http MCP_HOST=127.0.0.1 MCP_PORT=8002 python -m sfw_mcp_terraform</code></pre>
+<div class="warn">
+  No built-in authentication. Front it with a TLS-terminating, authenticating reverse
+  proxy before exposing it beyond localhost.
+</div>
+
+<h3>Docker</h3>
+<pre><code>docker compose up -d --build</code></pre>
+<p>
+  The image copies the Terraform binary from the official <code>hashicorp/terraform</code>
+  image. Unlike the other two servers in this collection, the workspace mount is
+  <strong>read-write</strong> &mdash; Terraform must write <code>.terraform/</code> and
+  state. Point it at a dedicated IaC checkout, not a shared working directory.
+</p>
+<div class="note">
+  Terraform is licensed <strong>BUSL-1.1</strong> by HashiCorp and the
+  <code>CiscoDevNet/fmc</code> provider is <strong>MPL-2.0</strong>. Both are used, not
+  redistributed by this project.
+</div>
+
+<h2>3. Manual testing</h2>
+<pre><code>python client/test_client.py</code></pre>
+<p>Menu-driven access to versions, init, validate, plan, explain, drift, and state. It prints a prominent warning when a plan is destructive.</p>
+
+<h2>4. Automated tests</h2>
+<p>
+  Unit tests cover the workspace allowlist (including traversal rejection), action
+  classification, plan summarisation, changed-attribute detection, sensitive-value
+  redaction in both plan and state, the apply gate, and confirmation-token binding. They
+  run against fixture JSON &mdash; no Terraform binary, no FMC.
+</p>
+<pre><code>pip install -r ../../requirements-dev.txt
+pytest tests</code></pre>
+
+<h2>5. Integrating with LLM agents</h2>
+<ol>
+  <li>Register the endpoint (stdio or HTTP).</li>
+  <li><code>list_workspaces</code> &rarr; pick a target.</li>
+  <li><code>init_workspace</code> &rarr; <code>validate_workspace</code> &rarr; <code>plan_workspace</code>.</li>
+  <li><code>explain_plan</code> &rarr; talk the user through it. <strong>Call out <code>is_destructive</code> explicitly.</strong></li>
+  <li><code>apply_plan</code> with the change summary and token unchanged.</li>
+  <li><code>detect_drift</code> afterwards to confirm the declared state holds.</li>
+</ol>
+
+<div class="note">
+  Suggested agent instruction: <em>Always run <code>plan_workspace</code> and walk me
+  through <code>explain_plan</code> before mentioning apply. If
+  <code>is_destructive</code> is true, list every affected address and ask me to confirm
+  each one.</em>
+</div>
+
+<h3>Worked example</h3>
+<p><em>&ldquo;Did anyone change our firewall objects outside Terraform this week?&rdquo;</em></p>
+<ol>
+  <li><code>detect_drift(workspace="starter")</code> &rarr; <code>drift_detected: true</code>, one resource.</li>
+  <li><code>explain_plan</code> &rarr; <code>UPDATE fmc_network_objects.app1 (attributes: value)</code>.</li>
+  <li>Agent reports: <em>&ldquo;APP1_NET was changed from 10.10.20.0/24 to 10.10.21.0/24 outside Terraform. Reconcile by updating the config, or apply to restore the declared state.&rdquo;</em></li>
+</ol>
+<p>All read-only. Nothing changed.</p>
+
+<h2>Limits</h2>
+<ul>
+  <li>FMC provider resource names differ across major provider versions. Run <code>terraform providers schema -json</code> and confirm against your own version.</li>
+  <li>One plan file per workspace (<code>mcp.tfplan</code>); a second <code>plan_workspace</code> overwrites it.</li>
+  <li>No remote-backend locking coordination. Do not point several server instances at the same state.</li>
+  <li><code>apply_plan</code> applies the saved plan only. It cannot apply an ad-hoc change.</li>
+</ul>
+
+<footer>
+  <p>
+    <strong>Not a Cisco product.</strong> This is an independent, community-maintained
+    project distributed under the MIT License. It is not developed, endorsed, supported,
+    or certified by Cisco Systems, Inc., and it is not covered by a Cisco support
+    contract or Cisco TAC.
+  </p>
+  <p>
+    Cisco, Secure Firewall, Firepower, FTD, FMC, and DevNet are trademarks or registered
+    trademarks of Cisco Systems, Inc. and/or its affiliates. Terraform and HashiCorp are
+    trademarks of HashiCorp, Inc. All marks are used solely to identify the products this
+    software interoperates with.
+  </p>
+  <p>
+    <strong>Generative AI:</strong> when you connect this server to a third-party AI
+    platform, your prompts and the data these tools return &mdash; which may include
+    firewall policy and addressing information &mdash; are processed under that
+    platform's terms and privacy statement, outside the control of this project.
+  </p>
+</footer>
+
+</div>
+</body>
+</html>

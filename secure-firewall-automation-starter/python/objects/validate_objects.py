@@ -1,13 +1,18 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 secure-firewall-automation-starter contributors
+"""Offline validation of the object CSV before anything is sent to FMC."""
+
 from __future__ import annotations
 
 import sys
 from pathlib import Path
+
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "python"))
 
-from common.utils import validate_ip_or_network
+from common.utils import validate_ip_or_network  # noqa: E402
 
 VALID_TYPES = {"Host", "Network"}
 
