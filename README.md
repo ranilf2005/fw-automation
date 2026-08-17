@@ -134,7 +134,7 @@ fw-automation/
 | --- | --- | --- |
 | Python | 3.11 or later | <https://www.python.org/downloads/> |
 | Git | any recent | <https://git-scm.com/downloads> |
-| Ansible (optional) | ansible-core 2.17+ | <https://docs.ansible.com/ansible/latest/installation_guide/index.html> |
+| Ansible (optional) | ansible-core 2.21+, needs Python 3.12+ | <https://docs.ansible.com/ansible/latest/installation_guide/index.html> |
 | Terraform (optional) | 1.6 or later | <https://developer.hashicorp.com/terraform/install> |
 | Docker (optional, for the MCP servers) | any recent | <https://docs.docker.com/get-docker/> |
 | An FMC | 7.0+ with REST API enabled | Your lab, or a [DevNet Sandbox](#related-sandbox) |
