@@ -157,17 +157,17 @@ def classify(actions: list[str]) -> str:
 def _sanitise(values: Any, sensitive: Any) -> Any:
     """Replace values Terraform marked sensitive before they reach a model context."""
     if isinstance(values, dict):
-        marks = sensitive if isinstance(sensitive, dict) else {}
+        dict_marks = sensitive if isinstance(sensitive, dict) else {}
         return {
             key: SENSITIVE_PLACEHOLDER
-            if marks.get(key) is True
-            else _sanitise(value, marks.get(key))
+            if dict_marks.get(key) is True
+            else _sanitise(value, dict_marks.get(key))
             for key, value in values.items()
         }
     if isinstance(values, list):
-        marks = sensitive if isinstance(sensitive, list) else []
+        list_marks = sensitive if isinstance(sensitive, list) else []
         return [
-            _sanitise(item, marks[index] if index < len(marks) else None)
+            _sanitise(item, list_marks[index] if index < len(list_marks) else None)
             for index, item in enumerate(values)
         ]
     return SENSITIVE_PLACEHOLDER if sensitive is True else values

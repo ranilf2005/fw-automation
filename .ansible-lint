@@ -8,10 +8,7 @@ exclude_paths:
   - collections/
   - mcp_servers/
 
-# The cisco.fmcansible collection is not installed in CI, so module-name resolution
-# for its tasks cannot be verified there. Syntax, naming, and security rules still apply.
-skip_list:
-  - syntax-check[specific]
-
+# The cisco.fmcansible collection is installed in CI from ansible/requirements.yml so
+# module-name resolution can be verified. syntax-check is unskippable in ansible-lint.
 warn_list:
   - experimental

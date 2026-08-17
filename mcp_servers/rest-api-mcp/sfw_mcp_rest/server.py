@@ -484,14 +484,14 @@ async def apply_object_changes(
         except FMCError as exc:
             results.append({"name": name, "status": "failed", "detail": redact(str(exc))})
 
-    created = sum(1 for r in results if r["status"] == "created")
-    audit("apply_object_changes", client.profile.id, {"created": created})
-    logger.warning("Applied %d object creations to profile %s", created, client.profile.id)
+    created_count = sum(1 for r in results if r["status"] == "created")
+    audit("apply_object_changes", client.profile.id, {"created": created_count})
+    logger.warning("Applied %d object creations to profile %s", created_count, client.profile.id)
 
     return {
         "ok": True,
         "profile": client.profile.id,
-        "created": created,
+        "created": created_count,
         "failed": sum(1 for r in results if r["status"] == "failed"),
         "results": results,
         "next_step": (

@@ -165,7 +165,16 @@ def matches_indicator(value: str, indicator: str) -> bool:
         return False
     try:
         if "/" in indicator:
-            return ipaddress.ip_network(indicator, strict=False).subnet_of(network)
+            candidate = ipaddress.ip_network(indicator, strict=False)
+            if isinstance(candidate, ipaddress.IPv4Network) and isinstance(
+                network, ipaddress.IPv4Network
+            ):
+                return candidate.subnet_of(network)
+            if isinstance(candidate, ipaddress.IPv6Network) and isinstance(
+                network, ipaddress.IPv6Network
+            ):
+                return candidate.subnet_of(network)
+            return False
         return ipaddress.ip_address(indicator) in network
     except (ValueError, TypeError):
         return False

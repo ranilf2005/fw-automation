@@ -57,11 +57,19 @@ no_implicit_optional = true
 check_untyped_defs = true
 disallow_untyped_defs = false
 ignore_missing_imports = true
-exclude = ["outputs/", "\\.venv/"]
+# Each MCP server ships an identically named client/test_client.py smoke-test harness,
+# which mypy would otherwise report as duplicate modules.
+exclude = ["outputs/", "\\.venv/", "[\\\\/]client[\\\\/]"]
 
 [[tool.mypy.overrides]]
 module = ["pandas.*", "fastmcp.*", "mcp.*", "dotenv.*"]
 ignore_missing_imports = true
+
+# numpy's bundled stubs use 3.12 `type` statements, which mypy rejects while targeting 3.11.
+[[tool.mypy.overrides]]
+module = ["numpy", "numpy.*"]
+follow_imports = "skip"
+follow_imports_for_stubs = true
 
 [tool.bandit]
 exclude_dirs = [".venv", "outputs", "tests", "__pycache__"]
