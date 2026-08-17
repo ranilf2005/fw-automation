@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 620" width="960" height="620" font-family="Segoe UI, Helvetica, Arial, sans-serif" role="img" aria-labelledby="title desc">
+  <title id="title">Secure Firewall Automation Starter Pack architecture</title>
+  <desc id="desc">An AI agent talks to three MCP servers. Every call passes through a shared safety gate before reaching Cisco Secure Firewall Management Center, which manages FTD devices. Python, Ansible and Terraform automation reach FMC on the same path.</desc>
+
+  <rect width="960" height="620" fill="#ffffff"/>
+
+  <text x="480" y="38" text-anchor="middle" font-size="21" font-weight="600" fill="#0d274d">Secure Firewall Automation Starter Pack</text>
+  <text x="480" y="61" text-anchor="middle" font-size="13" fill="#5a6b80">Read-only by default &#183; TLS on by default &#183; no credentials in source</text>
+
+  <!-- AI agent -->
+  <rect x="270" y="88" width="420" height="58" rx="8" fill="#0d274d"/>
+  <text x="480" y="113" text-anchor="middle" font-size="15" font-weight="600" fill="#ffffff">AI agent (MCP client)</text>
+  <text x="480" y="132" text-anchor="middle" font-size="12" fill="#a9bdd6">Claude Desktop &#183; VS Code &#183; any Model Context Protocol host</text>
+
+  <line x1="480" y1="146" x2="480" y2="176" stroke="#8fa3ba" stroke-width="2"/>
+  <polygon points="480,184 475,174 485,174" fill="#8fa3ba"/>
+
+  <!-- MCP servers -->
+  <rect x="40" y="186" width="880" height="122" rx="10" fill="#f4f8fb" stroke="#cfdce8"/>
+  <text x="60" y="208" font-size="12" font-weight="600" fill="#5a6b80">MCP SERVERS</text>
+
+  <rect x="62" y="220" width="270" height="72" rx="8" fill="#ffffff" stroke="#00bceb" stroke-width="2"/>
+  <text x="197" y="245" text-anchor="middle" font-size="14" font-weight="600" fill="#0d274d">REST API MCP</text>
+  <text x="197" y="265" text-anchor="middle" font-size="11" fill="#5a6b80">search policy, trace object usage,</text>
+  <text x="197" y="280" text-anchor="middle" font-size="11" fill="#5a6b80">preview and apply object changes</text>
+
+  <rect x="345" y="220" width="270" height="72" rx="8" fill="#ffffff" stroke="#00bceb" stroke-width="2"/>
+  <text x="480" y="245" text-anchor="middle" font-size="14" font-weight="600" fill="#0d274d">Ansible MCP</text>
+  <text x="480" y="265" text-anchor="middle" font-size="11" fill="#5a6b80">run allowlisted, human-reviewed</text>
+  <text x="480" y="280" text-anchor="middle" font-size="11" fill="#5a6b80">cisco.fmcansible playbooks</text>
+
+  <rect x="628" y="220" width="270" height="72" rx="8" fill="#ffffff" stroke="#00bceb" stroke-width="2"/>
+  <text x="763" y="245" text-anchor="middle" font-size="14" font-weight="600" fill="#0d274d">Terraform MCP</text>
+  <text x="763" y="265" text-anchor="middle" font-size="11" fill="#5a6b80">explain plans and detect drift,</text>
+  <text x="763" y="280" text-anchor="middle" font-size="11" fill="#5a6b80">never apply</text>
+
+  <line x1="480" y1="308" x2="480" y2="338" stroke="#8fa3ba" stroke-width="2"/>
+  <polygon points="480,346 475,336 485,336" fill="#8fa3ba"/>
+
+  <!-- Safety gate -->
+  <rect x="40" y="348" width="880" height="86" rx="10" fill="#fff8e6" stroke="#e0a800" stroke-width="2"/>
+  <text x="480" y="373" text-anchor="middle" font-size="14" font-weight="600" fill="#7a5c00">Shared safety gate</text>
+  <text x="480" y="396" text-anchor="middle" font-size="12" fill="#7a5c00">writes disabled unless explicitly enabled &#183; preview &#8594; human confirm &#8594; apply</text>
+  <text x="480" y="416" text-anchor="middle" font-size="12" fill="#7a5c00">expiring confirmation tokens &#183; allowlisted playbooks and workspaces &#183; secrets redacted &#183; audit log</text>
+
+  <line x1="480" y1="434" x2="480" y2="464" stroke="#8fa3ba" stroke-width="2"/>
+  <polygon points="480,472 475,462 485,462" fill="#8fa3ba"/>
+
+  <!-- FMC -->
+  <rect x="270" y="474" width="420" height="58" rx="8" fill="#0d274d"/>
+  <text x="480" y="499" text-anchor="middle" font-size="15" font-weight="600" fill="#ffffff">Secure Firewall Management Center</text>
+  <text x="480" y="518" text-anchor="middle" font-size="12" fill="#a9bdd6">REST API over HTTPS</text>
+
+  <line x1="480" y1="532" x2="480" y2="558" stroke="#8fa3ba" stroke-width="2"/>
+  <polygon points="480,566 475,556 485,556" fill="#8fa3ba"/>
+
+  <rect x="330" y="568" width="300" height="38" rx="8" fill="#ffffff" stroke="#8fa3ba"/>
+  <text x="480" y="592" text-anchor="middle" font-size="13" fill="#0d274d">Managed FTD devices</text>
+
+  <!-- Side path: direct automation -->
+  <rect x="40" y="474" width="200" height="58" rx="8" fill="#ffffff" stroke="#8fa3ba"/>
+  <text x="140" y="497" text-anchor="middle" font-size="13" font-weight="600" fill="#0d274d">Python CLI scripts</text>
+  <text x="140" y="516" text-anchor="middle" font-size="11" fill="#5a6b80">CSV-driven, run by humans</text>
+  <line x1="240" y1="503" x2="264" y2="503" stroke="#8fa3ba" stroke-width="2"/>
+  <polygon points="270,503 260,498 260,508" fill="#8fa3ba"/>
+
+  <rect x="720" y="474" width="200" height="58" rx="8" fill="#ffffff" stroke="#8fa3ba"/>
+  <text x="820" y="497" text-anchor="middle" font-size="13" font-weight="600" fill="#0d274d">Ansible / Terraform</text>
+  <text x="820" y="516" text-anchor="middle" font-size="11" fill="#5a6b80">run directly in CI</text>
+  <line x1="720" y1="503" x2="696" y2="503" stroke="#8fa3ba" stroke-width="2"/>
+  <polygon points="690,503 700,498 700,508" fill="#8fa3ba"/>
+</svg>

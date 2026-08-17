@@ -4,6 +4,8 @@ Three [Model Context Protocol](https://modelcontextprotocol.io) servers that let
 agent drive Cisco Secure Firewall automation — one per automation style used elsewhere
 in this repository.
 
+![All three servers sit between the AI agent and FMC, and every call passes through a shared safety gate.](../docs/images/architecture.svg)
+
 | Folder | Server | What the agent gets | Deploy |
 | --- | --- | --- | --- |
 | [rest-api-mcp/](rest-api-mcp/) | Secure Firewall REST API MCP Server | Direct FMC REST tooling: inventory, object search, object-usage tracing, rule listing, and a **preview → confirm → apply** change pipeline | stdio + HTTP/Stream |

@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 430" width="920" height="430" font-family="Segoe UI, Helvetica, Arial, sans-serif" role="img" aria-labelledby="title desc">
+  <title id="title">The preview, confirm and apply change gate</title>
+  <desc id="desc">An agent must call preview_object_changes to obtain a plan and an expiring confirmation token, show that plan to a human, and only then call apply_object_changes. Writes stay disabled unless the operator sets FMC_ALLOW_WRITES to true.</desc>
+
+  <rect width="920" height="430" fill="#ffffff"/>
+  <text x="460" y="30" text-anchor="middle" font-size="17" font-weight="600" fill="#0d274d">No agent writes to the firewall without a human in the loop</text>
+
+  <!-- step 1 -->
+  <rect x="30" y="60" width="250" height="150" rx="10" fill="#f4f8fb" stroke="#00bceb" stroke-width="2"/>
+  <circle cx="58" cy="88" r="15" fill="#00bceb"/>
+  <text x="58" y="93" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">1</text>
+  <text x="84" y="93" font-size="14" font-weight="600" fill="#0d274d">Preview</text>
+  <text x="48" y="122" font-size="12" fill="#3f5164">preview_object_changes()</text>
+  <text x="48" y="146" font-size="12" fill="#5a6b80">Classifies every entry as</text>
+  <text x="48" y="163" font-size="12" fill="#5a6b80">create, skip_exists or invalid.</text>
+  <text x="48" y="187" font-size="12" fill="#5a6b80">Changes nothing. Returns an</text>
+  <text x="48" y="204" font-size="12" fill="#5a6b80">expiring confirmation token.</text>
+
+  <line x1="280" y1="135" x2="316" y2="135" stroke="#8fa3ba" stroke-width="2"/>
+  <polygon points="324,135 314,130 314,140" fill="#8fa3ba"/>
+
+  <!-- step 2 -->
+  <rect x="332" y="60" width="250" height="150" rx="10" fill="#fff8e6" stroke="#e0a800" stroke-width="2"/>
+  <circle cx="360" cy="88" r="15" fill="#e0a800"/>
+  <text x="360" y="93" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">2</text>
+  <text x="386" y="93" font-size="14" font-weight="600" fill="#7a5c00">Human review</text>
+  <text x="350" y="122" font-size="12" fill="#7a5c00">The agent shows the plan.</text>
+  <text x="350" y="146" font-size="12" fill="#7a5c00">A person reads it and decides.</text>
+  <text x="350" y="177" font-size="12" fill="#7a5c00">Editing the plan invalidates</text>
+  <text x="350" y="194" font-size="12" fill="#7a5c00">the token.</text>
+
+  <line x1="582" y1="135" x2="618" y2="135" stroke="#8fa3ba" stroke-width="2"/>
+  <polygon points="626,135 616,130 616,140" fill="#8fa3ba"/>
+
+  <!-- step 3 -->
+  <rect x="634" y="60" width="250" height="150" rx="10" fill="#f4f8fb" stroke="#00bceb" stroke-width="2"/>
+  <circle cx="662" cy="88" r="15" fill="#00bceb"/>
+  <text x="662" y="93" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">3</text>
+  <text x="688" y="93" font-size="14" font-weight="600" fill="#0d274d">Apply</text>
+  <text x="652" y="122" font-size="12" fill="#3f5164">apply_object_changes()</text>
+  <text x="652" y="146" font-size="12" fill="#5a6b80">Requires a matching, unexpired</text>
+  <text x="652" y="163" font-size="12" fill="#5a6b80">token and FMC_ALLOW_WRITES.</text>
+  <text x="652" y="187" font-size="12" fill="#5a6b80">Only entries marked create are</text>
+  <text x="652" y="204" font-size="12" fill="#5a6b80">acted on. Every call audited.</text>
+
+  <!-- default state band -->
+  <rect x="30" y="242" width="854" height="60" rx="10" fill="#eef7ee" stroke="#3f9142" stroke-width="2"/>
+  <text x="460" y="267" text-anchor="middle" font-size="13" font-weight="600" fill="#265c29">Default state: writes are disabled</text>
+  <text x="460" y="288" text-anchor="middle" font-size="12" fill="#265c29">Until an operator sets FMC_ALLOW_WRITES=true, step 3 refuses and the server is read-only end to end.</text>
+
+  <!-- deploy note -->
+  <rect x="30" y="318" width="854" height="60" rx="10" fill="#f7f9fb" stroke="#cfdce8"/>
+  <text x="460" y="343" text-anchor="middle" font-size="13" font-weight="600" fill="#0d274d">The server never deploys</text>
+  <text x="460" y="364" text-anchor="middle" font-size="12" fill="#5a6b80">Objects are staged only. Deployment to managed FTD devices stays a deliberate action taken in FMC.</text>
+
+  <text x="30" y="404" font-size="11" fill="#8fa3ba">Illustrative diagram of the change pipeline implemented in mcp_servers/rest-api-mcp/sfw_mcp_rest/safety.py.</text>
+</svg>

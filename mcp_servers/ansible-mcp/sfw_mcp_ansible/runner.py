@@ -99,7 +99,7 @@ def ansible_playbook_binary() -> str:
     if not binary:
         raise ExecutableNotFound(
             "ansible-playbook is not on PATH. Install ansible-core in the environment "
-            "running this MCP server: pip install 'ansible-core~=2.17'."
+            "running this MCP server: pip install 'ansible-core~=2.21'."
         )
     return binary
 

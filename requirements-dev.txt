@@ -17,9 +17,10 @@ responses~=0.25.3
 bandit~=1.7.10
 pip-audit~=2.7.3
 
-# Ansible tooling
-ansible-core~=2.21.3
-ansible-lint~=26.8.0
+# Ansible tooling. ansible-core 2.21 and ansible-lint 26 declare Requires-Python >=3.12,
+# so they are skipped on 3.11, where the rest of the suite still runs.
+ansible-core~=2.21.3 ; python_version >= "3.12"
+ansible-lint~=26.8.0 ; python_version >= "3.12"
 
 # Pre-commit
 pre-commit~=3.8.0

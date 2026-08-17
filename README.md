@@ -31,6 +31,8 @@ version.
 > [MIT License](LICENSE). Not supported by Cisco TAC. See [NOTICE](NOTICE) and
 > [SUPPORT.md](SUPPORT.md).
 
+![How the pieces fit together: an AI agent reaches FMC only through three MCP servers and a shared safety gate, while Python, Ansible and Terraform automation reaches it directly.](docs/images/architecture.svg)
+
 ## Use Case
 
 A mid-size enterprise runs FMC-managed FTD firewalls and processes 20–40 firewall change

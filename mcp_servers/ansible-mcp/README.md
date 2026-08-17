@@ -1,7 +1,7 @@
 # Ansible MCP Server for Cisco Secure Firewall, lets an AI agent run reviewed cisco.fmcansible playbooks against FMC behind an allowlist and dry-run gate
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../../LICENSE)
-[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/downloads/)
 [![MCP](https://img.shields.io/badge/MCP-stdio%20%7C%20HTTP-green.svg)](https://modelcontextprotocol.io)
 
 Most teams that automate Cisco Secure Firewall already have a library of reviewed Ansible
@@ -11,7 +11,7 @@ This Model Context Protocol server does the opposite: the agent selects from an
 **allowlist** of playbooks a human already reviewed and merged, supplies validated
 variables, and runs them. What executes is still the playbook in version control.
 
-**Technology stack:** Python 3.11+, [FastMCP](https://github.com/jlowin/fastmcp),
+**Technology stack:** Python 3.12+, [FastMCP](https://github.com/jlowin/fastmcp),
 `ansible-core`, and the `cisco.fmcansible` collection. Standalone server, speaks MCP over
 stdio or HTTP. Docker image provided.
 
@@ -129,8 +129,8 @@ Specifically:
 
 | Requirement | Version | Where to get it |
 | --- | --- | --- |
-| Python | 3.11 or later | <https://www.python.org/downloads/> |
-| ansible-core | 2.17 or later | Installed by `requirements.txt` |
+| Python | 3.12 or later | <https://www.python.org/downloads/> |
+| ansible-core | 2.21 or later | Installed by `requirements.txt` |
 | Docker (optional) | any recent | <https://docs.docker.com/get-docker/> |
 | An FMC | 7.0+ with REST API enabled | Your lab, or a [DevNet Sandbox](#related-sandbox) |
 | An MCP-aware client | — | Claude Desktop, VS Code, Cursor, or any MCP agent |

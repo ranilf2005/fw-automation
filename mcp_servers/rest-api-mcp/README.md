@@ -17,6 +17,8 @@ Standalone server, speaks MCP over stdio or HTTP. Docker image provided.
 **Status:** 1.0.0. Read paths are stable; treat the write path as beta until you have
 confirmed the payloads against your own FMC version.
 
+![An analyst asks whether a host can reach the database; the agent chains search_objects, list_access_rules and find_object_usage, all read-only.](../../docs/images/agent-session-rest-api.svg)
+
 **Read-only tools**
 
 - `list_fmc_profiles` — discover the configured FMC instances.
@@ -34,6 +36,8 @@ confirmed the payloads against your own FMC version.
 
 - `apply_object_changes` — execute a previously previewed plan. Requires
   `FMC_ALLOW_WRITES=true` **and** a matching, unexpired confirmation token.
+
+![The change pipeline: preview produces a plan and an expiring token, a human reviews it, and only then can apply run.](../../docs/images/preview-confirm-apply.svg)
 
 ---
 

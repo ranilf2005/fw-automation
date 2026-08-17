@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 560" width="900" height="560" font-family="Segoe UI, Helvetica, Arial, sans-serif" role="img" aria-labelledby="title desc">
+  <title id="title">Illustrative agent session against the REST API MCP server</title>
+  <desc id="desc">An analyst asks whether a host is allowed to reach the database. The agent calls search_objects, list_access_rules and find_object_usage. All three tools are read-only, so nothing is changed and no confirmation is required.</desc>
+
+  <rect width="900" height="560" fill="#ffffff"/>
+  <text x="20" y="26" font-size="15" font-weight="600" fill="#0d274d">Illustrative agent session &#8212; REST API MCP server (read-only tools)</text>
+
+  <!-- terminal window -->
+  <rect x="20" y="40" width="860" height="470" rx="10" fill="#101822"/>
+  <rect x="20" y="40" width="860" height="34" rx="10" fill="#1d2836"/>
+  <rect x="20" y="64" width="860" height="10" fill="#1d2836"/>
+  <circle cx="42" cy="57" r="6" fill="#ff5f57"/>
+  <circle cx="62" cy="57" r="6" fill="#febc2e"/>
+  <circle cx="82" cy="57" r="6" fill="#28c840"/>
+  <text x="450" y="62" text-anchor="middle" font-size="12" fill="#8fa3ba">cisco-secure-firewall-rest</text>
+
+  <g font-family="Consolas, Menlo, monospace" font-size="13">
+    <text x="40" y="102" fill="#7dd3fc">user</text>
+    <text x="40" y="124" fill="#e6edf3">Is 10.10.20.5 allowed to reach the database, and is APP1_HOST still used?</text>
+
+    <text x="40" y="162" fill="#a5b4fc">agent</text>
+    <text x="40" y="184" fill="#8fa3ba">&#8594; calling search_objects(indicator="10.10.20.5")</text>
+
+    <text x="40" y="212" fill="#4ade80">{</text>
+    <text x="56" y="230" fill="#e6edf3">"ok": true,  "match_count": 1,</text>
+    <text x="56" y="248" fill="#e6edf3">"matches": [</text>
+    <text x="72" y="266" fill="#e6edf3">{ "name": "APP1_NET", "type": "Network", "value": "10.10.20.0/24" }</text>
+    <text x="56" y="284" fill="#e6edf3">]</text>
+    <text x="40" y="302" fill="#4ade80">}</text>
+
+    <text x="40" y="332" fill="#8fa3ba">&#8594; calling list_access_rules(access_policy="Corp-Policy", action="ALLOW")</text>
+    <text x="40" y="354" fill="#8fa3ba">&#8594; calling find_object_usage(object_name="APP1_HOST", access_policy="Corp-Policy")</text>
+
+    <text x="40" y="384" fill="#4ade80">{</text>
+    <text x="56" y="402" fill="#e6edf3">"reference_count": 2,  "safe_to_delete": false</text>
+    <text x="40" y="420" fill="#4ade80">}</text>
+
+    <text x="40" y="452" fill="#a5b4fc">agent</text>
+    <text x="40" y="474" fill="#e6edf3">10.10.20.5 is covered by APP1_NET, which two ALLOW rules permit to the</text>
+    <text x="40" y="492" fill="#e6edf3">database. APP1_HOST is still referenced twice, so it is not safe to delete.</text>
+  </g>
+
+  <text x="20" y="534" font-size="12" fill="#5a6b80">All three tools are read-only. No confirmation token was required and nothing on the FMC was changed.</text>
+  <text x="20" y="552" font-size="11" fill="#8fa3ba">Illustrative rendering of the documented worked example, not a capture of a production device.</text>
+</svg>
