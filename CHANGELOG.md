@@ -5,7 +5,9 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.0.0] - 2026-08-17
+
+First public release, hardened and documented for Cisco DevNet Code Exchange.
 
 ### Added
 
@@ -15,35 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `--log-level` flag to override `LOG_LEVEL` for a single run.
 - OSSF Scorecard workflow ([.github/workflows/scorecard.yml](.github/workflows/scorecard.yml)),
   closing Cisco Code Exchange good practice #12.
-
-### Changed
-
-- **Breaking for existing clones:** the project has been moved from the
-  `secure-firewall-automation-starter/` subdirectory to the **repository root**. Cisco
-  Code Exchange renders the root `README.md` and reads the root `LICENSE`, so the project
-  has to live there. Update any local clone with `git pull` and re-open the repository
-  root in your editor.
-- CI, Dependabot, gitleaks, pre-commit, and the issue and PR templates updated for the
-  flat layout.
-- Copyright holder set to `Ranil Fernando` in `LICENSE` and all SPDX headers, replacing
-  the placeholder.
-- Restructured the repository README and all three MCP server READMEs onto the official
-  [Cisco Code Exchange documentation template](https://github.com/CiscoDevNet/code-exchange-repo-template):
-  full use-case titles, and `Use Case`, `Installation`, `Configuration`, `Usage`,
-  `Related Sandbox`, `Known issues`, `Getting help`, `Getting involved`,
-  `Credits and references`, and `Licensing info` sections.
-- Installation sections now list prerequisites with download links and cover Windows,
-  macOS, and Linux.
-- `mcp_servers/SUBMISSION.md` rewritten against the live Code Exchange submission
-  requirements, including a comparison of MIT against the Cisco Sample Code License, a
-  status check against Cisco's published good and bad practices, and the exact repository
-  Description and topics to set.
-
-## [1.0.0] - 2026-08-17
-
-First release hardened for public consumption.
-
-### Added
+- Container build job in CI that builds all three MCP server images, so the Dockerfiles
+  are covered by the same pipeline as the Python code.
+- Illustrative architecture, agent-session, and change-gate diagrams under
+  `docs/images/`, referenced from the READMEs.
 
 - **`mcp_servers/`** — three Model Context Protocol servers that let an AI agent drive
   Cisco Secure Firewall automation safely:
@@ -72,6 +49,20 @@ First release hardened for public consumption.
 - **Breaking:** TLS certificate verification now defaults to **enabled**
   (`VERIFY_SSL=true`, `fmc_verify_ssl: true`). Lab users with self-signed certificates
   must now opt out explicitly.
+- The project lives at the **repository root**, because Cisco Code Exchange renders the
+  root `README.md` and reads the root `LICENSE`.
+- Copyright holder set to `Ranil Fernando` in `LICENSE` and all SPDX headers.
+- The repository README and all three MCP server READMEs follow the official
+  [Cisco Code Exchange documentation template](https://github.com/CiscoDevNet/code-exchange-repo-template):
+  full use-case titles, and `Use Case`, `Installation`, `Configuration`, `Usage`,
+  `Related Sandbox`, `Known issues`, `Getting help`, `Getting involved`,
+  `Credits and references`, and `Licensing info` sections. Installation sections list
+  prerequisites with download links and cover Windows, macOS, and Linux.
+- `mcp_servers/SUBMISSION.md` written against the live Code Exchange submission
+  requirements, including a comparison of MIT against the Cisco Sample Code License and
+  a status check against Cisco's published good and bad practices.
+- The Ansible MCP server now requires Python 3.12 or later, following its `ansible-core`
+  2.21 dependency.
 - Pinned all Python dependencies with compatible-release (`~=`) constraints.
 - Pinned the Terraform `CiscoDevNet/fmc` provider to a supported major version.
 - `ansible/group_vars/all.yml` no longer carries inline plaintext credentials; it reads
@@ -84,6 +75,14 @@ First release hardened for public consumption.
 
 ### Fixed
 
+- The CI workflow had never completed a successful run.
+  `mcp_servers/rest-api-mcp/requirements.txt` was unsatisfiable on its own
+  (`httpx~=0.27.2` against `fastmcp`'s `httpx>=0.28.1`), and the unskippable
+  `syntax-check` rule was listed in the ansible-lint `skip_list`. Both are resolved and
+  every job now passes.
+- Four type errors that the never-executed mypy step had been masking: duplicate
+  `client/test_client.py` modules, an `IPv4Network | IPv6Network` union passed to
+  `subnet_of()`, and two variables reused with a second, incompatible type.
 - `python/nat/create_manual_nat.py` raised an unhandled `KeyError` when a CSV row
   referenced a network object that did not exist in FMC; it now reports the missing
   object name and skips the row.
@@ -93,8 +92,10 @@ First release hardened for public consumption.
 
 - TLS verification on by default (see Changed).
 - Secret scanning, dependency auditing, and static analysis enforced in CI.
+- Cleared every finding `pip-audit --strict` reported across all four requirements
+  files, which required moving `fastmcp` to the 3.x line and raising `requests`,
+  `python-dotenv`, and `ansible-core`.
 - Documented least-privilege API user guidance and credential handling in
   [SECURITY.md](SECURITY.md).
 
-[Unreleased]: https://github.com/ranilf2005/fw-automation/compare/v1.0.0...HEAD
 [1.0.0]: https://github.com/ranilf2005/fw-automation/releases/tag/v1.0.0

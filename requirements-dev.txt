@@ -9,13 +9,13 @@ types-requests~=2.32.0
 types-PyYAML~=6.0.12
 
 # Tests
-pytest~=8.3.3
+pytest~=9.1.1
 pytest-cov~=5.0.0
 responses~=0.25.3
 
 # Security
 bandit~=1.7.10
-pip-audit~=2.7.3
+pip-audit~=2.10.1
 
 # Ansible tooling. ansible-core 2.21 and ansible-lint 26 declare Requires-Python >=3.12,
 # so they are skipped on 3.11, where the rest of the suite still runs.

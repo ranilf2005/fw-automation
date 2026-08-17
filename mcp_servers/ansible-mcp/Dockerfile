@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2026 Ranil Fernando
-FROM python:3.12-slim AS base
+FROM python:3.14-slim AS base
 
 RUN groupadd --gid 10001 mcp \
     && useradd --uid 10001 --gid mcp --create-home --shell /usr/sbin/nologin mcp
