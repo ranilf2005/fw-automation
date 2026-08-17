@@ -2,7 +2,7 @@
 version: 2
 updates:
   - package-ecosystem: pip
-    directory: /secure-firewall-automation-starter/python
+    directory: /python
     schedule:
       interval: weekly
       day: monday
@@ -12,7 +12,7 @@ updates:
     labels: [dependencies, python]
 
   - package-ecosystem: pip
-    directory: /secure-firewall-automation-starter
+    directory: /
     schedule:
       interval: weekly
       day: monday
@@ -22,7 +22,7 @@ updates:
     labels: [dependencies, python]
 
   - package-ecosystem: pip
-    directory: /secure-firewall-automation-starter/mcp_servers/rest-api-mcp
+    directory: /mcp_servers/rest-api-mcp
     schedule:
       interval: weekly
     commit-message:
@@ -30,7 +30,7 @@ updates:
     labels: [dependencies, mcp]
 
   - package-ecosystem: pip
-    directory: /secure-firewall-automation-starter/mcp_servers/ansible-mcp
+    directory: /mcp_servers/ansible-mcp
     schedule:
       interval: weekly
     commit-message:
@@ -38,7 +38,7 @@ updates:
     labels: [dependencies, mcp]
 
   - package-ecosystem: pip
-    directory: /secure-firewall-automation-starter/mcp_servers/terraform-mcp
+    directory: /mcp_servers/terraform-mcp
     schedule:
       interval: weekly
     commit-message:
@@ -46,7 +46,7 @@ updates:
     labels: [dependencies, mcp]
 
   - package-ecosystem: terraform
-    directory: /secure-firewall-automation-starter/terraform
+    directory: /terraform
     schedule:
       interval: weekly
     commit-message:
@@ -63,9 +63,9 @@ updates:
 
   - package-ecosystem: docker
     directories:
-      - /secure-firewall-automation-starter/mcp_servers/rest-api-mcp
-      - /secure-firewall-automation-starter/mcp_servers/ansible-mcp
-      - /secure-firewall-automation-starter/mcp_servers/terraform-mcp
+      - /mcp_servers/rest-api-mcp
+      - /mcp_servers/ansible-mcp
+      - /mcp_servers/terraform-mcp
     schedule:
       interval: weekly
     commit-message:

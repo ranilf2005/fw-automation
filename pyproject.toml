@@ -1,0 +1,117 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 Ranil Fernando
+#
+# Tooling configuration only. This repository is a collection of runnable scripts,
+# not an installable distribution, so no [project] table is declared.
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+extend-exclude = [
+    ".venv",
+    "outputs",
+    "__pycache__",
+]
+
+[tool.ruff.lint]
+select = [
+    "F",    # pyflakes
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "I",    # isort
+    "UP",   # pyupgrade
+    "B",    # flake8-bugbear
+    "C4",   # flake8-comprehensions
+    "SIM",  # flake8-simplify
+    "PTH",  # flake8-use-pathlib
+    "S",    # flake8-bandit
+    "RUF",  # ruff-specific
+]
+ignore = [
+    "E501",    # line length is enforced by the formatter
+    "S101",    # assert is fine in tests
+    "SIM108",  # ternary is not always more readable
+    "B008",    # function call in default arg (used by MCP tool decorators)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S105", "S106", "S107"]        # fake credentials in fixtures
+"**/tests/**" = ["S105", "S106", "S107"]
+"**/client/*.py" = ["S105", "S106"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["common", "sfw_mcp_rest", "sfw_mcp_ansible", "sfw_mcp_terraform"]
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.mypy]
+python_version = "3.11"
+mypy_path = "python:mcp_servers/rest-api-mcp:mcp_servers/ansible-mcp:mcp_servers/terraform-mcp"
+namespace_packages = true
+explicit_package_bases = true
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+no_implicit_optional = true
+check_untyped_defs = true
+disallow_untyped_defs = false
+ignore_missing_imports = true
+exclude = ["outputs/", "\\.venv/"]
+
+[[tool.mypy.overrides]]
+module = ["pandas.*", "fastmcp.*", "mcp.*", "dotenv.*"]
+ignore_missing_imports = true
+
+[tool.bandit]
+exclude_dirs = [".venv", "outputs", "tests", "__pycache__"]
+# B101 assert_used - not used in shipped code paths
+# B404/B603 subprocess - the Ansible and Terraform MCP servers must invoke CLIs.
+#   They do so with a fixed argv list, shell=False, and an allowlisted executable and
+#   working directory. See mcp_servers/*/sfw_mcp_*/runner.py.
+skips = ["B101", "B404", "B603"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests", "mcp_servers"]
+pythonpath = [
+    "python",
+    "mcp_servers/rest-api-mcp",
+    "mcp_servers/ansible-mcp",
+    "mcp_servers/terraform-mcp",
+]
+# client/test_client.py in each MCP server is an interactive smoke-test harness, not a
+# pytest module. It matches test_*.py, so collection has to skip those directories.
+norecursedirs = [
+    "client",
+    ".venv",
+    ".git",
+    "outputs",
+    "__pycache__",
+    "profiles",
+    ".terraform",
+]
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--strict-config",
+]
+filterwarnings = ["error::DeprecationWarning:common.*"]
+markers = [
+    "integration: requires a reachable lab FMC (deselected by default)",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["python", "mcp_servers"]
+omit = ["*/tests/*", "*/client/*", "*/__pycache__/*"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+]

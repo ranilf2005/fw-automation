@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 Ranil Fernando
+#
+# Copy to terraform.tfvars ONLY if you cannot use environment variables.
+# terraform.tfvars and *.auto.tfvars are gitignored - never commit real values.
+#
+# Preferred approach (nothing lands on disk):
+#   export TF_VAR_fmc_url=https://fmc.example.local
+#   export TF_VAR_fmc_username=apiuser
+#   read -rs TF_VAR_fmc_password && export TF_VAR_fmc_password
+
+fmc_url      = "https://fmc.example.local"
+fmc_username = "apiuser"
+
+# Do NOT put the password here. Use TF_VAR_fmc_password instead.
+# fmc_password = ""
+
+# Lab only. Leaving this false keeps TLS certificate validation enabled.
+fmc_insecure_skip_verify = false

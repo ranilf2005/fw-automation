@@ -44,10 +44,10 @@ If this writes or deletes, describe the **validation** and **rollback** steps:
 - [ ] No credentials or `Authorization` headers are written to logs
 - [ ] Specific exceptions are caught, not bare `except Exception`
 - [ ] New source files carry the SPDX header
-- [ ] New dependencies are pinned and their licences are recorded in [NOTICE](../secure-firewall-automation-starter/NOTICE)
+- [ ] New dependencies are pinned and their licences are recorded in [NOTICE](../NOTICE)
 - [ ] `CHANGELOG.md` updated under `## [Unreleased]`
 
 ## Certification
 
 - [ ] I wrote this code, or I have the right to submit it, and I license it under the
-      repository's [MIT License](../secure-firewall-automation-starter/LICENSE).
+      repository's [MIT License](../LICENSE).

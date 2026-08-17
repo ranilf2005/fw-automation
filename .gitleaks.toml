@@ -14,10 +14,10 @@ still be reviewed.
 paths = [
   '''.*\.env\.example$''',
   '''.*\.example$''',
-  '''secure-firewall-automation-starter/README\.md''',
-  '''secure-firewall-automation-starter/mcp_servers/.*\.(md|html)$''',
-  '''secure-firewall-automation-starter/ansible/group_vars/all\.yml''',
-  '''secure-firewall-automation-starter/terraform/terraform\.tfvars\.example''',
+  '''README\.md''',
+  '''mcp_servers/.*\.(md|html)$''',
+  '''ansible/group_vars/all\.yml''',
+  '''terraform/terraform\.tfvars\.example''',
 ]
 regexTarget = "line"
 regexes = [

@@ -1,0 +1,11 @@
+---
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 Ranil Fernando
+#
+# cisco.fmcansible is licensed GPL-3.0-or-later and maintained by Cisco. It is installed
+# from Ansible Galaxy at build time and is not redistributed by this project.
+# See https://github.com/CiscoDevNet/FMCAnsible and the repository NOTICE file.
+collections:
+  - name: cisco.fmcansible
+    version: ">=1.0.0,<2.0.0"
+    source: https://galaxy.ansible.com
