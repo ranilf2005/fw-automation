@@ -4,6 +4,6 @@
 # breaking major upgrades. Dependabot proposes bumps weekly; CI runs pip-audit.
 requests~=2.34.2
 python-dotenv~=1.2.2
-pandas~=2.2.3
+pandas~=3.0.5
 openpyxl~=3.1.5
 PyYAML~=6.0.3
