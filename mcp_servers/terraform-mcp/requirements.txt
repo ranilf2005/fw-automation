@@ -2,4 +2,4 @@
 # Runtime dependencies for the Terraform MCP server.
 # The Terraform CLI itself must be installed separately (>= 1.6).
 fastmcp~=2.3.0
-python-dotenv~=1.0.1
+python-dotenv~=1.2.2
