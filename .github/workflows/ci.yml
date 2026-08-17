@@ -147,17 +147,65 @@ jobs:
         run: terraform validate
 
   containers:
-    name: Container build (${{ matrix.server }})
+    name: Container smoke test (${{ matrix.server }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        server: [rest-api-mcp, ansible-mcp, terraform-mcp]
+        include:
+          - server: rest-api-mcp
+            port: 8000
+          - server: ansible-mcp
+            port: 8001
+          - server: terraform-mcp
+            port: 8002
     steps:
       - uses: actions/checkout@v7
 
-      - name: Build image
-        run: docker build -t sfw-mcp-${{ matrix.server }}:ci mcp_servers/${{ matrix.server }}
+      - name: Build and start the stack
+        working-directory: mcp_servers/${{ matrix.server }}
+        run: |
+          cp .env.example .env
+          docker compose up -d --build
+
+      # No credentials are supplied, so this proves the server boots and serves MCP over
+      # HTTP. It does not exercise any FMC call.
+      - name: MCP endpoint answers
+        working-directory: mcp_servers/${{ matrix.server }}
+        env:
+          PORT: ${{ matrix.port }}
+        run: |
+          body='{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"ci","version":"1"}}}'
+          for _ in $(seq 1 40); do
+            code=$(curl -sS -o /tmp/mcp-response -w '%{http_code}' -X POST \
+              -H 'Content-Type: application/json' \
+              -H 'Accept: application/json, text/event-stream' \
+              -d "$body" "http://127.0.0.1:${PORT}/mcp" 2>/dev/null || echo 000)
+            case "$code" in
+              000)
+                sleep 2
+                ;;
+              5*)
+                echo "::error::MCP endpoint returned HTTP $code"
+                head -c 2000 /tmp/mcp-response || true
+                docker compose logs
+                exit 1
+                ;;
+              *)
+                echo "MCP endpoint answered with HTTP $code"
+                head -c 500 /tmp/mcp-response || true
+                exit 0
+                ;;
+            esac
+          done
+          echo "::error::MCP endpoint never answered on port ${PORT}"
+          docker compose logs
+          exit 1
+
+      - name: Stop the stack
+        if: always()
+        working-directory: mcp_servers/${{ matrix.server }}
+        run: docker compose down -v
 
   docs:
     name: Link and policy check

@@ -527,7 +527,8 @@ terraform -chdir=terraform fmt -check
 ```
 
 Every pull request additionally runs `mypy`, `pip-audit`, `gitleaks`, CodeQL, and OSSF
-Scorecard. See [.github/workflows/ci.yml](.github/workflows/ci.yml).
+Scorecard, and starts each MCP server with `docker compose` to confirm it answers on
+`/mcp`. See [.github/workflows/ci.yml](.github/workflows/ci.yml).
 
 Full instructions on *how* to contribute are in [CONTRIBUTING.md](CONTRIBUTING.md), and
 all participation is governed by the [Code of Conduct](CODE_OF_CONDUCT.md).

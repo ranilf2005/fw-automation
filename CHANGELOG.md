@@ -17,8 +17,12 @@ First public release, hardened and documented for Cisco DevNet Code Exchange.
 - `--log-level` flag to override `LOG_LEVEL` for a single run.
 - OSSF Scorecard workflow ([.github/workflows/scorecard.yml](.github/workflows/scorecard.yml)),
   closing Cisco Code Exchange good practice #12.
-- Container build job in CI that builds all three MCP server images, so the Dockerfiles
-  are covered by the same pipeline as the Python code.
+- Container smoke test in CI that starts each of the three MCP servers with
+  `docker compose` and asserts the `/mcp` endpoint answers, so the Dockerfiles and the
+  compose files are covered by the same pipeline as the Python code.
+- An authorship and AI-assistance disclosure in [NOTICE](NOTICE), stating that
+  generative AI tools were used substantially to write this project and naming the two
+  limits that assistance does not remove.
 - Illustrative architecture, agent-session, and change-gate diagrams under
   `docs/images/`, referenced from the READMEs.
 

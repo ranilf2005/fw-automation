@@ -96,9 +96,30 @@ and are not redistributed.
 
 ## Generative AI disclosure
 
+### Connecting these servers to an AI platform
+
 The MCP servers under `mcp_servers/` are designed to be driven by AI agents. When you
 connect them to a third-party AI platform, your prompts and the data returned by these
 tools — which may include firewall policy and addressing information — are processed
 under **that platform's** terms and privacy statement, outside the control of this
 project. Review those terms before pointing an external model at a production
 management plane.
+
+### How this project was written
+
+Generative AI coding tools were used substantially in writing the code and documentation
+in this repository. Everything published here is covered by the automated checks
+described in the README — unit tests, linting, type checking, static analysis, dependency
+auditing, and secret scanning — which run in CI on every push and pull request.
+
+AI assistance does not remove two limits, and both are stated here rather than left for
+you to discover:
+
+- **The write paths have never been executed against a real FMC.** They are exercised
+  only by offline unit tests with mocked responses. Validate them in a lab against your
+  own FMC version before relying on them. This is why the READMEs describe the write
+  paths as beta.
+- **FMC payload schemas differ between releases.** Confirm every endpoint and field in
+  your own API Explorer (`https://<fmc-host>/api/api-explorer`) rather than assuming the
+  payloads here match your deployment. `python/nat/create_manual_nat.py` is the most
+  version-sensitive script in the repository.

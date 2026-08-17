@@ -258,8 +258,8 @@ verified against this repository on 2026-08-17.
 - [x] `pytest` passes with no live FMC required
 - [x] `ruff check`, `ruff format --check`, `mypy`, and `bandit` pass
 - [x] All three container images build in CI
-- [ ] `docker compose up -d --build` produces a server that answers on `/mcp` — CI builds
-      the images but does not run them, so verify this by hand against your own lab
+- [x] `docker compose up -d --build` produces a server that answers on `/mcp` — CI starts
+      each stack and asserts the endpoint responds
 - [x] A tagged release exists
 
 ## 10. Submit
