@@ -13,6 +13,7 @@ import requests
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "python"))
 
+from common.cli import parse_csv_args  # noqa: E402
 from common.fmc_client import FMCClient  # noqa: E402
 from common.logger import get_logger  # noqa: E402
 from common.utils import write_csv  # noqa: E402
@@ -21,7 +22,9 @@ logger = get_logger(__name__)
 
 
 def main() -> None:
-    input_path = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "inputs" / "services.csv"
+    input_path = parse_csv_args(
+        "Create FMC protocol/port service objects from a CSV file.", "inputs/services.csv"
+    ).input
     df = pd.read_csv(input_path)
     client = FMCClient()
     domain_uuid = client.domain_uuid()

@@ -1,9 +1,21 @@
-# Cisco Secure Firewall REST API MCP Server
+# Cisco Secure Firewall REST API MCP Server, lets an AI agent search FMC policy and propose object changes behind a preview-and-confirm gate
 
-MCP server that gives an AI agent the Cisco Secure Firewall Management Center (FMC)
-REST API behind a safety harness. It answers investigation questions directly, and it
-can propose configuration changes — but it is structurally incapable of changing a
-firewall in a single tool call.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../../LICENSE)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
+[![MCP](https://img.shields.io/badge/MCP-stdio%20%7C%20HTTP-green.svg)](https://modelcontextprotocol.io)
+
+AI agents are good at firewall investigation work — correlating an IP to an object, an
+object to the rules that reference it, and those rules to a recommendation — but giving a
+language model a `create_object` tool means being one bad inference away from a policy
+change. This Model Context Protocol server resolves that tension: it exposes the Cisco
+Secure Firewall Management Center (FMC) REST API as seven read-only tools plus one write
+tool that is **structurally incapable of running unreviewed**.
+
+**Technology stack:** Python 3.11+, [FastMCP](https://github.com/jlowin/fastmcp), `httpx`.
+Standalone server, speaks MCP over stdio or HTTP. Docker image provided.
+
+**Status:** 1.0.0. Read paths are stable; treat the write path as beta until you have
+confirmed the payloads against your own FMC version.
 
 **Read-only tools**
 
@@ -25,7 +37,40 @@ firewall in a single tool call.
 
 ---
 
-## Why the preview/apply split
+## Use Case
+
+A security operations engineer gets a question that sounds simple and is not:
+*"Is 10.10.20.5 allowed to reach the database, and can we retire APP1_HOST?"*
+
+Answering it by hand means opening FMC, searching objects, guessing which network object
+contains that host, opening the access policy, and scrolling. Ten minutes per question,
+and the "can we retire it?" half is usually answered with a shrug because nothing shows
+object references.
+
+**The solution.** Point an MCP-aware agent at this server and ask in plain language. The
+agent calls `search_objects` (which understands IP containment, so `10.10.20.5` matches
+`10.10.20.0/24`), then `list_access_rules`, then `find_object_usage` — which returns every
+referencing rule and an explicit `safe_to_delete` flag.
+
+**Outcomes and benefits**
+
+| Before | After |
+| --- | --- |
+| ~10 minutes of GUI navigation per question | One conversational question, answered from structured JSON |
+| "Which object covers this IP?" answered by eye | IP-containment matching does it exactly |
+| Object cleanup avoided because references are unknown | `safe_to_delete` with the list of referencing rules |
+| Change proposals typed straight into the GUI | `preview_object_changes` produces a reviewable plan first |
+
+**The challenge overcome.** The hard part was not exposing the API — it was making it
+safe to expose to a non-deterministic caller. The answer is the preview/confirm/apply
+gate described below, which makes a single-call mutation impossible rather than merely
+discouraged.
+
+**Where it could go next.** Group, range, and FQDN object support; rule creation behind
+the same gate; and an ITSM bridge so a change ticket produces the plan automatically. See
+[../IDEAS.md](../IDEAS.md).
+
+### Why the preview/apply split
 
 Handing a language model a `create_object` tool means one bad inference away from a
 policy change. This server makes that impossible by construction:
@@ -55,7 +100,50 @@ fresh at process start. So:
 
 ---
 
-## 1. Configure FMC access
+## Installation
+
+### Prerequisites
+
+| Requirement | Version | Where to get it |
+| --- | --- | --- |
+| Python | 3.11 or later | <https://www.python.org/downloads/> |
+| Docker (optional) | any recent | <https://docs.docker.com/get-docker/> |
+| An FMC | 7.0+ with REST API enabled | Your lab, or a [DevNet Sandbox](#related-sandbox) |
+| An MCP-aware client | — | Claude Desktop, VS Code, Cursor, or any MCP agent |
+
+### Clone and install
+
+```bash
+git clone https://github.com/ranilf2005/fw-automation.git
+cd fw-automation/secure-firewall-automation-starter/mcp_servers/rest-api-mcp
+```
+
+**Linux / macOS**
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+**Windows PowerShell**
+
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
+
+### Verify the install
+
+The unit tests need no FMC and no credentials:
+
+```bash
+pip install -r ../../requirements-dev.txt
+pytest tests
+```
+
+## Configuration
 
 ### Single FMC (env mode)
 
@@ -126,7 +214,7 @@ tokens are redacted before anything is written.
 
 ---
 
-## 2. Run the MCP server
+## Usage
 
 ### Transport selection
 
@@ -195,7 +283,7 @@ dropped, and the port bound to loopback. Rebuild after changing `requirements.tx
 
 ---
 
-## 3. Manual testing
+### Manual testing
 
 `client/test_client.py` runs the server in-process and drives its tools from a menu:
 
@@ -208,7 +296,7 @@ listing, deployment status, and change preview against your own FMC.
 
 ---
 
-## 4. Automated tests
+### Automated tests
 
 Unit tests cover profile parsing and resolution, the write gate, confirmation-token
 issue/verify/expiry/tamper paths, redaction, object validation, and indicator matching.
@@ -221,7 +309,7 @@ pytest tests
 
 ---
 
-## 5. Integrating with LLM agents
+### Integrating with LLM agents
 
 Any MCP-aware agent platform can consume this server:
 
@@ -252,22 +340,97 @@ All read-only, no confirmation needed, nothing changed.
 
 ---
 
-## Limits and things to confirm yourself
+## Related Sandbox
 
-- FMC payload schemas vary by release. Confirm endpoints and fields in **API Explorer**
-  on your own FMC (`https://<fmc-host>/api/api-explorer`) before relying on write paths.
-- `apply_object_changes` handles Host and Network objects only. Groups, ranges, FQDN
+You need an FMC to run this against. If you do not have a lab, Cisco DevNet provides free
+sandboxes:
+
+- [DevNet Sandbox catalogue](https://devnetsandbox.cisco.com/RM/Topology) — search for
+  **Secure Firewall** or **Firepower**
+- [Cisco Secure Firewall developer centre](https://developer.cisco.com/secure-firewall/)
+
+Point `FMC_BASE_URL`, `FMC_USERNAME`, and `FMC_PASSWORD` at the sandbox. Sandbox FMCs
+present a self-signed certificate — download the CA and set `FMC_CA_BUNDLE` rather than
+setting `FMC_VERIFY_SSL=false`. Then run `python client/test_client.py` and choose
+`get_inventory`; if it returns device counts, you are connected.
+
+## Known issues
+
+- **FMC payload schemas vary by release.** Confirm endpoints and fields in **API
+  Explorer** on your own FMC (`https://<fmc-host>/api/api-explorer`) before relying on
+  write paths. This is the most common source of failures.
+- **`apply_object_changes` handles Host and Network objects only.** Groups, ranges, FQDN
   objects, rules, and NAT are deliberately out of scope for the first release.
-- The server never triggers a deployment. Review and deploy from FMC.
-- Listings are capped at 5000 objects per call to keep responses bounded.
+- **The server never triggers a deployment.** Review and deploy from FMC.
+- **Listings are capped at 5000 objects per call** so responses stay bounded. Very large
+  estates will be truncated; narrow your filters.
+- **No built-in authentication on the HTTP transport.** Front it with a TLS-terminating
+  authenticating reverse proxy before exposing it beyond localhost.
+- **Confirmation tokens do not survive a restart.** The signing key is generated per
+  process, on purpose — a plan is only valid against the FMC state it was computed from.
+
+Issues are tracked in
+[GitHub Issues](https://github.com/ranilf2005/fw-automation/issues). Please use the
+provided templates and include your FMC version.
+
+## Getting help
+
+| I need... | Go to |
+| --- | --- |
+| Help with this server, a bug, or a feature idea | [GitHub Issues](https://github.com/ranilf2005/fw-automation/issues/new/choose) |
+| To report a security vulnerability **in this repo** | [SECURITY.md](../../SECURITY.md) — do **not** open a public issue |
+| Help with Cisco Secure Firewall itself | [Cisco TAC](https://www.cisco.com/c/en/us/support/index.html) |
+| FMC REST API questions | [Cisco DevNet Secure Firewall](https://developer.cisco.com/secure-firewall/) |
+| MCP protocol questions | [modelcontextprotocol.io](https://modelcontextprotocol.io) |
+| Community discussion | [Cisco Code Exchange Community](https://community.cisco.com/t5/code-exchange/bd-p/dev-code-exchange) |
+
+Before opening an issue, re-run with `LOG_LEVEL=DEBUG` and confirm the endpoint in API
+Explorer. Full guidance is in [SUPPORT.md](../../SUPPORT.md).
+
+## Getting involved
+
+Contributions are welcome. Current focus areas:
+
+- Object groups, ranges, and FQDN objects in `preview_object_changes`
+- Rule creation behind the same preview/confirm gate
+- Validating write payloads against more FMC versions
+- Bearer-token or OAuth authentication for the HTTP transport
+
+Development environment:
+
+```bash
+pip install -r requirements.txt
+pip install -r ../../requirements-dev.txt
+pre-commit install
+pytest tests
+```
+
+Full instructions on *how* to contribute are in [CONTRIBUTING.md](../../CONTRIBUTING.md),
+and all participation is governed by the
+[Code of Conduct](../../CODE_OF_CONDUCT.md).
+
+## Credits and references
+
+- [CiscoDevNet/CiscoFMC-MCP-server-community](https://github.com/CiscoDevNet/CiscoFMC-MCP-server-community) —
+  the published FMC MCP server whose profile model and documentation structure this
+  server follows
+- [FastMCP](https://github.com/jlowin/fastmcp) — the MCP server framework (Apache-2.0)
+- [Model Context Protocol specification](https://modelcontextprotocol.io)
+- [Cisco Secure Firewall Management Center REST API Quick Start Guide](https://www.cisco.com/c/en/us/td/docs/security/firepower/latest/api/REST/secure_firewall_management_center_rest_api_quick_start_guide.html)
 
 ## Security
 
-Read [../../SECURITY.md](../../SECURITY.md) before pointing this at anything you care
-about. Tool results contain your policy and addressing data, and when connected to a
-hosted model that data is processed under the AI platform's terms — see the Generative AI
-disclosure in [../../NOTICE](../../NOTICE).
+Read [SECURITY.md](../../SECURITY.md) before pointing this at anything you care about.
+Tool results contain your policy and addressing data, and when connected to a hosted
+model that data is processed under the AI platform's terms — see the Generative AI
+disclosure in [NOTICE](../../NOTICE).
 
-## Licence
+## Licensing info
 
-MIT — see [../../LICENSE](../../LICENSE). Not a Cisco product; not supported by Cisco TAC.
+This code is licensed under the MIT License. See [LICENSE](../../LICENSE) for details.
+
+Third-party attribution and Cisco trademark acknowledgement are in
+[NOTICE](../../NOTICE).
+
+**Not a Cisco product.** Not developed, endorsed, or supported by Cisco Systems, Inc.,
+and not covered by a Cisco support contract or Cisco TAC.

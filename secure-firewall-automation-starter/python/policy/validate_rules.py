@@ -12,6 +12,7 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "python"))
 
+from common.cli import parse_csv_args  # noqa: E402
 from common.fmc_client import FMCClient  # noqa: E402
 
 REQUIRED_COLUMNS = [
@@ -40,7 +41,10 @@ def split_names(value: str) -> list[str]:
 
 
 def main() -> None:
-    input_path = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "inputs" / "rules.csv"
+    input_path = parse_csv_args(
+        "Validate an access-rule CSV, including that referenced objects exist in FMC.",
+        "inputs/rules.csv",
+    ).input
     df = pd.read_csv(input_path)
     missing_cols = [c for c in REQUIRED_COLUMNS if c not in df.columns]
     if missing_cols:

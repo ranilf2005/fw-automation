@@ -14,6 +14,7 @@ import requests
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "python"))
 
+from common.cli import parse_csv_args  # noqa: E402
 from common.config import load_settings  # noqa: E402
 from common.fmc_client import FMCClient  # noqa: E402
 from common.logger import get_logger  # noqa: E402
@@ -31,7 +32,9 @@ def main() -> None:
     if not settings.nat_policy_id:
         raise SystemExit("Set NAT_POLICY_ID in python/.env before running create_manual_nat.py")
 
-    input_path = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "inputs" / "nat.csv"
+    input_path = parse_csv_args(
+        "Create FTD manual NAT rules in an FMC NAT policy from a CSV file.", "inputs/nat.csv"
+    ).input
     df = pd.read_csv(input_path)
     client = FMCClient()
     domain_uuid = client.domain_uuid()

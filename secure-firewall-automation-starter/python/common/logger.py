@@ -10,6 +10,9 @@ import re
 
 from .config import ROOT
 
+# Names handed out by get_logger, so --log-level can re-level them after import.
+_MANAGED: set[str] = set()
+
 # Patterns that must never reach a log file or the console.
 _REDACTIONS: tuple[tuple[re.Pattern[str], str], ...] = (
     (
@@ -55,6 +58,7 @@ def get_logger(name: str) -> logging.Logger:
     logfile = logs_dir / "automation.log"
 
     logger = logging.getLogger(name)
+    _MANAGED.add(name)
     if logger.handlers:
         return logger
     logger.setLevel(os.getenv("LOG_LEVEL", "INFO").upper())
@@ -72,3 +76,13 @@ def get_logger(name: str) -> logging.Logger:
     console_handler.addFilter(redactor)
     logger.addHandler(console_handler)
     return logger
+
+
+def set_level(level: str) -> None:
+    """Re-level every logger built by :func:`get_logger`.
+
+    Module-level loggers are created at import time, before command-line arguments are
+    parsed, so ``--log-level`` has to reach back and adjust them.
+    """
+    for name in _MANAGED:
+        logging.getLogger(name).setLevel(level.upper())

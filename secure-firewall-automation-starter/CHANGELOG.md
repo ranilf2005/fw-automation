@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `-h` / `--help` on every `python/` script via a shared `python/common/cli.py` helper.
+  Help output documents the arguments and the required environment variables, and a
+  missing input CSV now fails immediately with a clear message and exit code 2.
+- `--log-level` flag to override `LOG_LEVEL` for a single run.
+
+### Changed
+
+- Restructured the repository README and all three MCP server READMEs onto the official
+  [Cisco Code Exchange documentation template](https://github.com/CiscoDevNet/code-exchange-repo-template):
+  full use-case titles, and `Use Case`, `Installation`, `Configuration`, `Usage`,
+  `Related Sandbox`, `Known issues`, `Getting help`, `Getting involved`,
+  `Credits and references`, and `Licensing info` sections.
+- Installation sections now list prerequisites with download links and cover Windows,
+  macOS, and Linux.
+- `mcp_servers/SUBMISSION.md` rewritten against the live Code Exchange submission
+  requirements, including a comparison of MIT against the Cisco Sample Code License and a
+  status check against Cisco's published good and bad practices.
+
 ## [1.0.0] - 2026-08-17
 
 First release hardened for public consumption.

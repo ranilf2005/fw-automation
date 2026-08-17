@@ -10,6 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "python"))
 
+from common.cli import parse_args  # noqa: E402
 from common.config import load_settings  # noqa: E402
 from common.fmc_client import FMCClient  # noqa: E402
 from common.logger import get_logger  # noqa: E402
@@ -19,6 +20,7 @@ logger = get_logger(__name__)
 
 
 def main() -> None:
+    parse_args("Run a read-only compliance scan of FMC objects and access rules.")
     settings = load_settings()
     client = FMCClient()
     domain_uuid = client.domain_uuid()

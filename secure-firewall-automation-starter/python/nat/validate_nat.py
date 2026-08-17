@@ -12,13 +12,16 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "python"))
 
+from common.cli import parse_csv_args  # noqa: E402
 from common.fmc_client import FMCClient  # noqa: E402
 
 VALID_NAT_TYPES = {"STATIC", "DYNAMIC"}
 
 
 def main() -> None:
-    input_path = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "inputs" / "nat.csv"
+    input_path = parse_csv_args(
+        "Validate a NAT CSV, including that referenced objects exist in FMC.", "inputs/nat.csv"
+    ).input
     df = pd.read_csv(input_path)
     required = ["name", "nat_type", "source_network", "translated_network", "destination_interface"]
     missing_cols = [c for c in required if c not in df.columns]

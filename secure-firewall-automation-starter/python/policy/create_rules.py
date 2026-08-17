@@ -14,6 +14,7 @@ import requests
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "python"))
 
+from common.cli import parse_csv_args  # noqa: E402
 from common.config import load_settings  # noqa: E402
 from common.fmc_client import FMCClient  # noqa: E402
 from common.logger import get_logger  # noqa: E402
@@ -55,7 +56,9 @@ def main() -> None:
     if not settings.access_policy_id:
         raise SystemExit("Set ACCESS_POLICY_ID in python/.env before running create_rules.py")
 
-    input_path = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "inputs" / "rules.csv"
+    input_path = parse_csv_args(
+        "Create FMC access control rules from a CSV file.", "inputs/rules.csv"
+    ).input
     df = pd.read_csv(input_path)
     client = FMCClient()
     domain_uuid = client.domain_uuid()

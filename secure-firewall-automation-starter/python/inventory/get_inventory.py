@@ -10,6 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "python"))
 
+from common.cli import parse_args  # noqa: E402
 from common.fmc_client import FMCClient  # noqa: E402
 from common.logger import get_logger  # noqa: E402
 from common.utils import write_json  # noqa: E402
@@ -18,6 +19,7 @@ logger = get_logger(__name__)
 
 
 def main() -> None:
+    parse_args("Export a read-only inventory from FMC into outputs/reports/.")
     client = FMCClient()
     domains = client.get("/api/fmc_platform/v1/info/domain")
     write_json("outputs/reports/domains.json", domains)

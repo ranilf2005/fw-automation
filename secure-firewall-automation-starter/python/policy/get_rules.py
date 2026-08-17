@@ -10,6 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "python"))
 
+from common.cli import parse_args  # noqa: E402
 from common.config import load_settings  # noqa: E402
 from common.fmc_client import FMCClient  # noqa: E402
 from common.logger import get_logger  # noqa: E402
@@ -19,6 +20,7 @@ logger = get_logger(__name__)
 
 
 def main() -> None:
+    parse_args("Export the access rules of one FMC access policy to outputs/reports/.")
     settings = load_settings()
     if not settings.access_policy_id:
         raise SystemExit("Set ACCESS_POLICY_ID in python/.env before running get_rules.py")
