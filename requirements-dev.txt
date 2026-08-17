@@ -3,7 +3,7 @@
 # and mcp_servers/*/requirements.txt.
 
 # Lint / format / types
-ruff~=0.6.9
+ruff~=0.16.3
 mypy~=1.11.2
 types-requests~=2.32.0
 types-PyYAML~=6.0.12
