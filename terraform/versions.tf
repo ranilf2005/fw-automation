@@ -11,7 +11,7 @@ terraform {
       source = "CiscoDevNet/fmc"
       # Pinned to a major version so `terraform init` cannot silently pull a
       # breaking release. Bump deliberately after reading the provider changelog.
-      version = "~> 1.4"
+      version = "~> 2.5"
     }
   }
 }
