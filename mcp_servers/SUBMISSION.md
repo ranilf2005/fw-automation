@@ -190,17 +190,12 @@ gh repo edit ranilf2005/fw-automation \
 
 ## 7. Open gaps
 
-Fix these before submitting, or accept them knowingly:
+One item remains, and it is deliberate:
 
-1. **Screenshots.** Code Exchange recommends a visual. A terminal capture of
-   `get_inventory.py` output and of an agent conversation driving an MCP server would
-   strengthen the tile. Sample output blocks are in the READMEs in the meantime.
-2. **Employer open-source policy.** The copyright holder is set to a personal name while
-   the work relates to a Cisco product. Confirm this is permitted before publishing.
-3. **Tagged release.** Cut `v1.0.0` once you are happy with the content.
-4. **Scorecard publishing.** `publish_results` is `false` in
+1. **Scorecard publishing.** `publish_results` is `false` in
    [scorecard.yml](../.github/workflows/scorecard.yml) because publishing requires opting
-   the repo in to the OpenSSF REST API first. Flip it once you have.
+   the repo in to the OpenSSF REST API first. The workflow runs and uploads its SARIF to
+   code scanning either way; only the public badge needs the opt-in.
 
 ## 8. Splitting a server into its own repository
 
@@ -218,51 +213,54 @@ and add the `requirements-dev.txt` and `pyproject.toml` the tests depend on.
 
 ## 9. Pre-submission checklist
 
-Run through this before you submit. Most rejections are avoidable.
+Run through this before you submit. Most rejections are avoidable. Ticked items were
+verified against this repository on 2026-08-17.
 
 ### Content
 
-- [ ] README opens with a substantive description, not "this repo contains"
-- [ ] Title is the full use case name (good practice #10)
-- [ ] `## Installation` and `## Usage` are present, specific, and tested
-- [ ] Windows, macOS, and Linux instructions are all present (good practice #2)
-- [ ] A `## Related Sandbox` link with instructions to run against it (good practice #6)
-- [ ] `## Known issues`, `## Getting help`, `## Getting involved`, and
+- [x] README opens with a substantive description, not "this repo contains"
+- [x] Title is the full use case name (good practice #10)
+- [x] `## Installation` and `## Usage` are present, specific, and tested
+- [x] Windows, macOS, and Linux instructions are all present (good practice #2)
+- [x] A `## Related Sandbox` link with instructions to run against it (good practice #6)
+- [x] `## Known issues`, `## Getting help`, `## Getting involved`, and
       `## Credits and references` present
-- [ ] Both stdio and HTTP transports documented, with a copy-pasteable `mcpServers`
+- [x] Both stdio and HTTP transports documented, with a copy-pasteable `mcpServers`
       client config block
-- [ ] GitHub repo Description and topics are set
-- [ ] Screenshots or a short demo, if you have them
-- [ ] No marketing language, no unverifiable performance claims
+- [x] GitHub repo Description and topics are set
+- [x] Screenshots or a short demo, if you have them — diagrams in [../docs/images](../docs/images)
+- [x] No marketing language, no unverifiable performance claims
 
 ### Legal and compliance
 
-- [ ] OSI-approved licence (or the Cisco Sample Code License) at the repository **root**
-- [ ] Copyright holder is a real name or entity, not a placeholder
-- [ ] A one-line licensing statement in the README pointing at the LICENSE file
-- [ ] "Not a Cisco product / not supported by Cisco TAC" stated explicitly
-- [ ] Cisco trademarks acknowledged, used only nominatively, and **not** used in the
+- [x] OSI-approved licence (or the Cisco Sample Code License) at the repository **root**
+- [x] Copyright holder is a real name or entity, not a placeholder
+- [x] A one-line licensing statement in the README pointing at the LICENSE file
+- [x] "Not a Cisco product / not supported by Cisco TAC" stated explicitly
+- [x] Cisco trademarks acknowledged, used only nominatively, and **not** used in the
       package, module, or repository name in a way implying Cisco origin
-- [ ] Third-party dependency licences recorded (see [../NOTICE](../NOTICE)); check for
+- [x] Third-party dependency licences recorded (see [../NOTICE](../NOTICE)); check for
       GPL contamination if you vendor anything
-- [ ] Generative AI disclosure present — Code Exchange displays its own disclaimer about
+- [x] Generative AI disclosure present — Code Exchange displays its own disclaimer about
       third-party AI platforms, and your repo should match it
 
 ### Security
 
-- [ ] `git log -p | grep -iE 'password|token|secret'` returns nothing real
-- [ ] No `.env`, `*.tfvars`, `*.pem`, or vault password files tracked
-- [ ] All sample data uses RFC 1918 / RFC 5737 addressing and `.example` domains
-- [ ] TLS verification on by default
-- [ ] Secret scanning and dependency audit run in CI and pass
-- [ ] Write operations gated and documented
+- [x] `git log -p | grep -iE 'password|token|secret'` returns nothing real
+- [x] No `.env`, `*.tfvars`, `*.pem`, or vault password files tracked
+- [x] All sample data uses RFC 1918 / RFC 5737 addressing and `.example` domains
+- [x] TLS verification on by default
+- [x] Secret scanning and dependency audit run in CI and pass
+- [x] Write operations gated and documented
 
 ### Quality
 
-- [ ] `pytest` passes with no live FMC required
-- [ ] `ruff check`, `ruff format --check`, `mypy`, and `bandit` pass
-- [ ] `docker compose up -d --build` produces a server that answers on `/mcp`
-- [ ] A tagged release exists
+- [x] `pytest` passes with no live FMC required
+- [x] `ruff check`, `ruff format --check`, `mypy`, and `bandit` pass
+- [x] All three container images build in CI
+- [ ] `docker compose up -d --build` produces a server that answers on `/mcp` — CI builds
+      the images but does not run them, so verify this by hand against your own lab
+- [x] A tagged release exists
 
 ## 10. Submit
 
