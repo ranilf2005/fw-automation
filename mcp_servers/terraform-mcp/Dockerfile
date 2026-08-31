@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2026 Ranil Fernando
-FROM hashicorp/terraform:1.15.8 AS terraform
+FROM hashicorp/terraform:1.16.0 AS terraform
 
 FROM python:3.14-slim AS base
 
