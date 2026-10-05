@@ -3,4 +3,4 @@
 # Compatible-release pins allow security patches, block breaking majors.
 fastmcp~=3.4.7
 httpx~=0.28.1
-python-dotenv~=1.2.2
+python-dotenv~=1.2.4
